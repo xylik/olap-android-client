@@ -1,0 +1,10 @@
+WITH MEMBER Measures.avgByCountryOverProducts AS
+AVG( Location.[Country level].CurrentMember.children , Measures.Sales )
+
+SELECT
+Location.[Country level].Members ON COLUMNS,
+Product.[Product level].Members ON ROWS
+
+FROM [Sales cube]
+WHERE Measures.avgByCountryOverProducts
+

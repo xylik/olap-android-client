@@ -5,4 +5,4 @@
 .DS_Store
 /build
 /captures
-/app/src/main/res/raw/project.properties
+/app/src/main/assets/security/*

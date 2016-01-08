@@ -15,8 +15,9 @@ public class Profile {
         prefs = PreferenceManager.getDefaultSharedPreferences(ctx.getApplicationContext());
     }
 
-    public static final String GCM_ID = "com.fer.hr.GCM_ID";
+    private static final String GCM_ID = "com.fer.hr.GCM_ID";
     private static final String APP_VERSION = "com.fer.hr.APP_VERSION";
+    private static final String AUTHENTICATION_TOKEN = "com.fer.hr.AUTHENTICATION_TOKEN";
 
     public void setGcmId(String gcmId) {
         if (TextUtils.isEmpty(gcmId)) throw new ProfileException("gcmId can't be empty");
@@ -33,6 +34,14 @@ public class Profile {
 
     public int getAppVersion() {
         return prefs.getInt(APP_VERSION, -1);
+    }
+
+    public void setAuthenticationToken(String token) {
+        prefs.edit().putString(AUTHENTICATION_TOKEN, token).commit();
+    }
+
+    public String getAuthenticationToken() {
+        return prefs.getString(AUTHENTICATION_TOKEN, null);
     }
 
 }

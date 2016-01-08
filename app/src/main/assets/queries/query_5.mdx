@@ -1,0 +1,9 @@
+WITH MEMBER Measures.avgByCategoryOverPlaces AS
+AVG( [Product].[Category level].CurrentMember.children , Measures.Sales )
+
+SELECT
+Location.[Place name].Members ON COLUMNS,
+Product.[Category level].Members ON ROWS
+
+FROM [Sales cube]
+WHERE Measures.avgByCategoryOverPlaces

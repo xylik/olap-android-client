@@ -3,54 +3,35 @@ package com.fer.hr.gcm;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.text.TextUtils;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.fer.hr.App;
-import com.fer.hr.R;
 import com.fer.hr.data.Profile;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
 
 /**
  * Created by igor on 03/01/16.
  */
 public class GCMService {
     public static String TAG = GCMService.class.getSimpleName();
-    //TODO git: move to text application properties file and add to gitignore
-    private static final String PROJECT_ID_KEY = "PROJECT_ID";
-    private static String PROJECT_ID;
+
+    private String projectId;
 
     private static GCMService instance;
     private Context ctx;
     private Profile appProfile;
 
-    private GCMService(Context ctx) {
+    private GCMService(Context ctx, String projectId) {
         this.ctx = ctx;
+        this.projectId = projectId;
         appProfile = new Profile(ctx);
-
-        Properties properties = new Properties();
-        InputStream is = null;
-        try {
-            is = App.getAppContext().getResources().openRawResource(R.raw.project);
-            properties.load(is);
-        }catch(Resources.NotFoundException e) {
-            Log.e(TAG, e.toString());
-        } catch (IOException e) {
-            Log.e(TAG, e.toString());
-        }
-
-        PROJECT_ID = properties.getProperty(PROJECT_ID_KEY);
     }
 
-    public static synchronized GCMService instance(Context ctx) {
-        if(instance == null) instance = new GCMService(ctx);
+    public static synchronized GCMService instance(Context ctx, String projectId) {
+        if(instance == null) instance = new GCMService(ctx, projectId);
         return instance;
     }
 
@@ -76,7 +57,7 @@ public class GCMService {
                 GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(ctx);
                 String gcmRegId = null;
                 try {
-                     gcmRegId = gcm.register(PROJECT_ID);
+                     gcmRegId = gcm.register(projectId);
                 } catch (IOException ex) {
                     Log.d(TAG, ex.toString());
                     if(resultListener != null) resultListener.failure(ex.toString());

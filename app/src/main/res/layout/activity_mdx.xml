@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <include
+        android:id="@+id/navigationBar"
+        layout="@layout/navigation_bar"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"/>
+
+    <Spinner
+        android:id="@+id/mdxSpn"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/itemHeightMedium"
+        android:background="@drawable/border_lightblue"
+        android:layout_marginTop="@dimen/marginExtraLarge"
+        android:layout_below="@+id/navigationBar"/>
+
+    <TextView
+        android:id="@+id/mdxLbl"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/itemHeightMedium"
+        android:layout_alignBottom="@+id/mdxSpn"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="@dimen/marginSmall"
+        android:gravity="center_vertical"
+        android:textSize="@dimen/mediumText"
+        android:textColor="@color/black"
+        android:text="Mdx:"/>
+
+    <EditText
+        android:id="@+id/mdxTxt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/marginLarge"
+        android:background="@drawable/border_lightblue"
+        android:padding="@dimen/paddingSmall"
+        android:layout_below="@+id/mdxLbl"
+        android:textColor="@color/black"/>
+
+    <Button
+        android:id="@+id/executeMdxBtn"
+        android:layout_width="120dp"
+        android:layout_height="45dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:textSize="@dimen/mediumText"
+        android:text="Execute"
+        android:textColor="@color/white"
+        android:background="@drawable/btn_background"/>
+
+</RelativeLayout>

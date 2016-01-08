@@ -3,4 +3,12 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+
+    <!--Olap-->
+    <color name="shadow">#ffcccccc</color>
+    <color name="lightBlue">#4ab1ea</color>
+    <color name="white">#ffffff</color>
+    <color name="black">#000000</color>
+    <color name="green">#008000</color>
+    <color name="red">#FF0000</color>
 </resources>

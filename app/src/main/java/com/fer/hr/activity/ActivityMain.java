@@ -9,14 +9,14 @@ import com.google.gson.Gson;
 
 import java.util.UUID;
 
-import com.fer.hr.olap.rest.api.SaikuApi;
-import com.fer.hr.olap.rest.dto.license.License;
-import com.fer.hr.olap.rest.dto.discover.SaikuConnection;
-import com.fer.hr.olap.rest.dto.discover.SaikuCube;
-import com.fer.hr.olap.rest.dto.discover.SaikuCubeMetadata;
-import com.fer.hr.olap.rest.dto.queryResult.QueryResult;
-import com.fer.hr.olap.rest.dto.session.Session;
-import com.fer.hr.olap.rest.dto.query2.ThinQuery;
+import com.fer.hr.rest.api.SaikuApi;
+import com.fer.hr.rest.dto.license.License;
+import com.fer.hr.rest.dto.discover.SaikuConnection;
+import com.fer.hr.rest.dto.discover.SaikuCube;
+import com.fer.hr.rest.dto.discover.SaikuCubeMetadata;
+import com.fer.hr.rest.dto.queryResult.QueryResult;
+import com.fer.hr.rest.dto.session.Session;
+import com.fer.hr.rest.dto.query2.ThinQuery;
 
 import retrofit.Callback;
 import retrofit.ResponseCallback;

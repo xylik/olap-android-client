@@ -1,0 +1,6 @@
+SELECT
+NON EMPTY {[Location].[Country level].Members} ON COLUMNS,
+
+NON EMPTY {[Product].[Product level].Members} ON ROWS
+
+FROM [Sales cube]

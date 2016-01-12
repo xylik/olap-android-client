@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rootLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include
+        android:id="@+id/navigationBar"
+        layout="@layout/navigation_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <!--<ScrollView-->
+        <!--android:id="@+id/resultVerticalScrol"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_below="@+id/navigationBar"-->
+        <!--android:layout_marginTop="@dimen/marginLarge"-->
+        <!--android:fillViewport="true"-->
+        <!--android:scrollbars="vertical">-->
+
+        <HorizontalScrollView
+            android:id="@+id/resultHorizontalScrol"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="horizontal"
+            android:fillViewport="true"
+            android:layout_below="@+id/navigationBar">
+
+        </HorizontalScrollView>
+    <!--</ScrollView>-->
+
+    <View
+        android:id="@+id/measureView"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_alignParentBottom="true"/>
+
+</RelativeLayout>

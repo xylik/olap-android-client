@@ -15,6 +15,7 @@ import retrofit.http.GET;
 import retrofit.http.POST;
 import retrofit.http.Path;
 import retrofit.http.Query;
+import rx.Observable;
 
 /**
  * Created by igor on 18/12/15.
@@ -57,6 +58,9 @@ public interface SaikuApi {
     @POST("/saiku/api/query/execute")
     void executeThinQuery(@Body ThinQuery thinQuery,  Callback<QueryResult> response);
 
+    @POST("/saiku/api/query/execute")
+    Observable<QueryResult> executeThinQuery(@Body ThinQuery thinQuery);
+
     @FormUrlEncoded
     @POST("/authentication/register")
     void registerAccount(@Field("credentials")String credentials, @Field("gcmid")String gcmId, Callback<String> response);
@@ -64,6 +68,10 @@ public interface SaikuApi {
     @FormUrlEncoded
     @POST("/authentication/login")
     void login(@Field("credentials")String credentials, Callback<String> response);
+
+    @FormUrlEncoded
+    @POST("/authentication/login")
+    Observable<String> login(@Field("credentials")String credentials);
 
     @FormUrlEncoded
     @POST("/authentication/logout")

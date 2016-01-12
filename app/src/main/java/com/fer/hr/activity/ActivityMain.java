@@ -4,9 +4,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.fer.hr.App;
 import com.fer.hr.R;
+import com.fer.hr.data.Profile;
 import com.google.gson.Gson;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Properties;
 import java.util.UUID;
 
 import com.fer.hr.rest.api.SaikuApi;
@@ -22,23 +30,107 @@ import retrofit.Callback;
 import retrofit.ResponseCallback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
+import rx.Observable;
+import rx.Observer;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
+import rx.subscriptions.CompositeSubscription;
 
 
 public class ActivityMain extends AppCompatActivity {
+    private static final String CUBE_METADATA_PATH = "queries/testCube.properties";
     public static SaikuApi api;
     public static SaikuCube cube;
     public static ThinQuery query;
+    private Profile appProfile;
+    private QueryResult qr;
 
     public static String mdx = "SELECT NON EMPTY {[Location].[Place name].Members} ON COLUMNS, NON EMPTY {[Product].[Product level].Members} ON ROWS FROM [Sales cube]";
+
+    private CompositeSubscription subscription;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        appProfile = new Profile(this);
 
 
 //        api.createSession("admin", "admin", "en", new ResponseImp());
 //        api.getConnectionsMetadata("admin", System.currentTimeMillis(), connectionsMetaCbk);
+
+        String credentials = "Basic aWdvckBnbWFpbC5jb206bG96aW5rYQ==";
+
+        subscription = new CompositeSubscription();
+
+        Observable<String> obs = App.api.login(credentials);
+        subscription.add(
+                obs.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<String>() {
+                    @Override
+                    public void onCompleted() {
+                        System.out.println("COMPLETED");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        System.out.println("e = " + e.getMessage());
+                    }
+
+                    @Override
+                    public void onNext(String s) {
+                        System.out.println("s = " + s);
+                        appProfile.setAuthenticationToken(s);
+                        executeThinQuery();
+                    }
+                }));
+
+    }
+
+    public void executeThinQuery() {
+        String mdxQuery = "SELECT NON EMPTY {[Location].[Place name].Members} ON COLUMNS, NON EMPTY {[Product].[Product level].Members} ON ROWS FROM [Sales cube]";
+        SaikuCube cube = loadCubeDefinitionFromAssets(CUBE_METADATA_PATH);
+        ThinQuery tq = new ThinQuery(UUID.randomUUID().toString(), cube, mdxQuery);
+
+        App.api.executeThinQuery(tq)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(queryResult -> {
+                    System.out.println("igor" + queryResult.getCellset().get(0).toString());
+                });
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        subscription.unsubscribe();
+    }
+
+    private SaikuCube loadCubeDefinitionFromAssets(String filePath) {
+        InputStream is = null;
+        try {
+            is = getAssets().open(filePath);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        Properties p = new Properties();
+        try {
+            p.load(is);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        boolean isVisible = p.getProperty("VISIBLE").equalsIgnoreCase("true") ? true : false;
+        return new SaikuCube(
+                p.getProperty("CONNECTION"),
+                p.getProperty("UNIQUE_NAME"),
+                p.getProperty("NAME"),
+                p.getProperty("CAPTION"),
+                p.getProperty("CATALOG"),
+                p.getProperty("SCHEMA"),
+                isVisible);
     }
 
     class ResponseImp extends ResponseCallback {

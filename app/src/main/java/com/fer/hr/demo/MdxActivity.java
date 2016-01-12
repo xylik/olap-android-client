@@ -131,8 +131,7 @@ public class MdxActivity extends AppCompatActivity {
         executeMdxBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(MdxActivity.this, ResultActivity.class);
-//              i.putExtra(MDX_KEY, queries.get(mdxSpn.getSelectedItemPosition()).queryRaw);
+                Intent i = new Intent(MdxActivity.this, TableResultActivity.class);
                 i.putExtra(MDX_KEY, mdxTxt.getText().toString());
 
                 startActivity(i);

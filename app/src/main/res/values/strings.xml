@@ -2,4 +2,12 @@
     <string name="app_name">OLAPViewer</string>
     <string name="title_activity_login">LoginActivity</string>
     <string name="title_activity_result">ResultActivity</string>
+
+    <!--DashboardActivity-->
+    <string name="dshboardActTitle">Dashboards</string>
+    <string name="cubes">Cubes</string>
+    <string name="measures">Measures</string>
+    <string name="dimensions">Dimensions</string>
+
+
 </resources>

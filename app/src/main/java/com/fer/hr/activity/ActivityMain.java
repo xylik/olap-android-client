@@ -179,7 +179,7 @@ public class ActivityMain extends AppCompatActivity {
             cube = sc.getCatalogs().get(0).getSchemas().get(0).getCubes().get(0);
             String cube = ActivityMain.cube.getName();
             String key = connection + "/" + catalog + "/" + schema + "/" + cube;
-            api.getCubeMetadata("admin", connection, catalog, schema, cube, key, System.currentTimeMillis(), cubeMetaCbk);
+//            api.getCubeMetadata("admin", connection, catalog, schema, cube, key, System.currentTimeMillis(), cubeMetaCbk);
         }
 
         @Override

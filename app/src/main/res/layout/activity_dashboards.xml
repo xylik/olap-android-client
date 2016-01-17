@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <include
+        android:id="@+id/navigationBar"
+        layout="@layout/navigation_bar"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"/>
+    
+    <ListView
+        android:id="@+id/dashboardsList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/navigationBar"
+        android:layout_marginTop="@dimen/paddingSmall"
+        android:divider="@drawable/gray_list_divider"
+        android:dividerHeight="1dp"
+        android:paddingLeft="@dimen/paddingLarge"/>
+
+</LinearLayout>

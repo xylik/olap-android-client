@@ -3,10 +3,10 @@ package com.fer.hr;
 import android.app.Application;
 import android.content.Context;
 
-import com.fer.hr.gcm.GCMService;
+import com.fer.hr.data.Profile;
 import com.fer.hr.rest.api.ApiRequestInterceptor;
-import com.fer.hr.rest.api.Constants;
 import com.fer.hr.rest.api.SaikuApi;
+import com.fer.hr.data.Constants;
 import com.squareup.okhttp.OkHttpClient;
 
 import java.io.IOException;
@@ -26,12 +26,14 @@ public class App extends Application {
     private static final String PROJECT_ID_KEY = "PROJECT_ID";
     private static final String API_URL_KEY = "API_URL";
     private static Context ctx;
+    private static Profile appProfile;
     public static SaikuApi api;
 
     @Override
     public void onCreate() {
         super.onCreate();
         ctx = this;
+        appProfile = new Profile(ctx);
 
         try {
             InputStream is = getAssets().open(PROJECT_SETTINGS_PATH);
@@ -42,8 +44,6 @@ public class App extends Application {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        GCMService.instance(this, Constants.PROJECT_ID).registerWithGCMServer(null);
 
         OkHttpClient client = new OkHttpClient();
         CookieManager cookieManager = new CookieManager();
@@ -60,5 +60,9 @@ public class App extends Application {
 
     public static Context getAppContext() {
         return ctx;
+    }
+
+    public static Profile getProfile() {
+        return appProfile;
     }
 }

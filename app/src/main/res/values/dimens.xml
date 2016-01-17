@@ -22,6 +22,8 @@
     <dimen name="paddingLarge">24dp</dimen>
     <dimen name="paddingMedium">16dp</dimen>
     <dimen name="paddingSmall">8dp</dimen>
+    <dimen name="paddingExtraSmall">4dp</dimen>
+    <dimen name="paddingMicro">2dp</dimen>
 
 
     <dimen name="_marginExtraLarge">75dp</dimen>
@@ -33,4 +35,16 @@
     <dimen name="marginLarge">24dp</dimen>
     <dimen name="marginMedium">16dp</dimen>
     <dimen name="marginSmall">8dp</dimen>
+    <dimen name="marginExtraSmall">4dp</dimen>
+    <dimen name="marginMicro">2dp</dimen>
+    <dimen name="padding">1dp</dimen>
+
+
+    <dimen name="textExtraLarge">30sp</dimen>
+    <dimen name="textLarge">24sp</dimen>
+    <dimen name="textMedium">20sp</dimen>
+    <dimen name="textSmall">16sp</dimen>
+    <dimen name="textExtraSmall">12sp</dimen>
+
+    <dimen name="dp">1dp</dimen>
 </resources>

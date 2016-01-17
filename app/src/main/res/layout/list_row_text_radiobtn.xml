@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rootLyt"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/itemHeightMedium"
+    android:padding="@dimen/dp"
+    android:orientation="horizontal">
+
+    <LinearLayout
+        android:id="@+id/txtContainerLyt"
+        android:layout_width="match_parent"
+        android:layout_toLeftOf="@+id/radioBtn"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/cubeNameTxt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:text="Sales cube"
+            android:textColor="@color/black"
+            android:textSize="@dimen/textMedium" />
+
+        <TextView
+            android:id="@+id/cubeCatalogTxt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:text="Test connection"
+            android:textColor="@color/gray"
+            android:textSize="@dimen/textSmall" />
+    </LinearLayout>
+
+    <RadioButton
+        android:id="@+id/radioBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:clickable="false"
+        android:focusable="false"/>
+</RelativeLayout>

@@ -37,19 +37,28 @@ public interface SaikuApi {
     @GET("/api/license")
     void getLicense(@Query("_") long currentMs, Callback<License> response);
 
-    @GET("/{username}/discover")
+    @GET("/saiku/{username}/discover")
     void getConnectionsMetadata(@Path("username") String username, @Query("_") long currentMs, Callback<SaikuConnection[]> response);
 
-    @GET("/{username}/discover/{connection}/{catalog}/{schema}/{cube}/metadata")
+    @GET("/saiku/{username}/discover")
+    SaikuConnection[] getConnectionsMetadata(@Path("username") String username);
+
+    @GET("/saiku/{username}/discover/{connection}/{catalog}/{schema}/{cube}/metadata")
     void getCubeMetadata(
             @Path("username") String username,
             @Path("connection") String connection,
             @Path("catalog") String catalog,
             @Path("schema") String schema,
             @Path("cube") String cube,
-            @Query("key") String key,
-            @Query("_") long currentMs,
             Callback<SaikuCubeMetadata> response);
+
+    @GET("/saiku/{username}/discover/{connection}/{catalog}/{schema}/{cube}/metadata")
+    SaikuCubeMetadata getCubeMetadata(
+            @Path("username") String username,
+            @Path("connection") String connection,
+            @Path("catalog") String catalog,
+            @Path("schema") String schema,
+            @Path("cube") String cube);
 
     @FormUrlEncoded
     @POST("/saiku/api/query/{queryname}")
@@ -64,6 +73,11 @@ public interface SaikuApi {
     @FormUrlEncoded
     @POST("/authentication/register")
     void registerAccount(@Field("credentials")String credentials, @Field("gcmid")String gcmId, Callback<String> response);
+
+    @FormUrlEncoded
+    @POST("/authentication/register")
+    String registerAccount(@Field("credentials")String credentials, @Field("gcmid")String gcmId);
+
 
     @FormUrlEncoded
     @POST("/authentication/login")

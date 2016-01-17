@@ -1,18 +1,21 @@
-package com.fer.hr.demo;
+package com.fer.hr.activity;
 
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PointF;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -40,28 +43,29 @@ import retrofit.client.Response;
 public class TableResultActivity extends AppCompatActivity {
     private static final String CUBE_METADATA_PATH = "queries/testCube.properties";
 
+    @Bind(R.id.rootLayout)
+    RelativeLayout rootLayout;
+    @Bind(R.id.resultVerticalScrol)
+    ScrollView vScroll;
+    @Bind(R.id.resultHorizontalScrol)
+    HorizontalScrollView hScroll;
     @Bind(R.id.btnBack)
     ImageButton btnBack;
     @Bind(R.id.actionBtn)
     ImageButton actionBtn;
     @Bind(R.id.title)
     TextView title;
-    @Bind(R.id.rootLayout)
-    RelativeLayout rootLayout;
-    @Bind(R.id.resultHorizontalScrol)
-    HorizontalScrollView resultHorizontalScrol;
-    @Bind(R.id.measureView)
-    View measureView;
-    private TableLayout tableLyt;
+    private TableLayout table;
 
     private static boolean isRunning = false;
     final static float STEP = 200;
+    private static final int FONT_SIZE = 10;
     float mRatio = 1.0f;
     int mBaseDist;
     float mBaseRatio;
     private QueryResult queryResult;
-    private int mw = -1;
-    private int th = -1;
+
+    private float mx, my;
 
     private static int UPDATE_TABLE;
     Handler mHandler = new Handler() {
@@ -97,9 +101,8 @@ public class TableResultActivity extends AppCompatActivity {
                         return;
                     }
                     TableResultActivity.this.queryResult = queryResult;
-                    tableLyt = createTableLayout(null, queryResult, queryResult.getHeight(), 0);
-                    resultHorizontalScrol.addView(tableLyt);
-//                    mw = measureView.getWidth();
+                    table = createTableLayout(null, queryResult, queryResult.getHeight(), 0);
+                    hScroll.addView(table);
                 }
             }
 
@@ -122,7 +125,30 @@ public class TableResultActivity extends AppCompatActivity {
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
-        if (event.getPointerCount() == 2) {
+        if (event.getPointerCount() == 1) {
+            float curX, curY;
+
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    mx = event.getX();
+                    my = event.getY();
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    curX = event.getX();
+                    curY = event.getY();
+                    vScroll.scrollBy((int) (mx - curX), (int) (my - curY));
+                    hScroll.scrollBy((int) (mx - curX), (int) (my - curY));
+                    mx = curX;
+                    my = curY;
+                    break;
+                case MotionEvent.ACTION_UP:
+                    curX = event.getX();
+                    curY = event.getY();
+                    vScroll.scrollBy((int) (mx - curX), (int) (my - curY));
+                    hScroll.scrollBy((int) (mx - curX), (int) (my - curY));
+                    break;
+            }
+        } else if (event.getPointerCount() == 2) {
             int action = event.getAction();
             int pureaction = action & MotionEvent.ACTION_MASK;
             if (pureaction == MotionEvent.ACTION_POINTER_DOWN) {
@@ -133,7 +159,7 @@ public class TableResultActivity extends AppCompatActivity {
                 float multi = (float) Math.pow(2, delta);
                 mRatio = Math.min(1024.0f, Math.max(0.1f, mBaseRatio * multi));
                 //fontsize + mratio
-                zoom(mRatio, mRatio, new PointF(0, 0));
+                zoom(mRatio, new PointF(0, 0));
             }
         }
         super.dispatchTouchEvent(event);
@@ -182,13 +208,17 @@ public class TableResultActivity extends AppCompatActivity {
 
     private TableLayout createTableLayout(List<String> attributeNames, QueryResult queryResult, int rowsPerPage, int startPos) {
         Context ctx = this;
-        TableLayout.LayoutParams tableLayoutParams = new TableLayout.LayoutParams();
-        TableLayout tableLayout = new TableLayout(ctx);
-        tableLayout.setBackgroundColor(Color.BLACK);
 
-        TableRow.LayoutParams tableRowParams = new TableRow.LayoutParams();
-        tableRowParams.setMargins(1, 1, 1, 1);
-        tableRowParams.weight = 1;
+        TableLayout table = new TableLayout(ctx);
+        TableLayout.LayoutParams tableLayout = new TableLayout.LayoutParams(TableLayout.LayoutParams.WRAP_CONTENT, TableLayout.LayoutParams.WRAP_CONTENT);
+        table.setLayoutParams(tableLayout);
+//        table.setBackgroundColor(Color.BLACK);
+
+        TableRow.LayoutParams rowLayout = new TableRow.LayoutParams(TableLayout.LayoutParams.WRAP_CONTENT, TableLayout.LayoutParams.WRAP_CONTENT);
+
+        TableRow.LayoutParams cellLayout = new TableRow.LayoutParams(TableLayout.LayoutParams.WRAP_CONTENT, TableLayout.LayoutParams.WRAP_CONTENT);
+        cellLayout.setMargins(1, 1, 1, 1);
+//        cellLayout.weight = 1;
 
 //        TableRow tblHeader = new TableRow(ctx);
 //        tblHeader.setBackgroundColor(Color.BLACK);
@@ -203,64 +233,35 @@ public class TableResultActivity extends AppCompatActivity {
 
         for (int i = startPos, resSize = queryResult.getHeight(), end = i + rowsPerPage; i < resSize && i < end; i++) {
             TableRow tblRow = new TableRow(ctx);
+            tblRow.setLayoutParams(rowLayout);
             tblRow.setBackgroundColor(Color.BLACK);
 
-            Cell[] row = queryResult.getCellset().get(i);
-            for (Cell c : row) {
+            Cell[] rowData = queryResult.getCellset().get(i);
+            for (Cell cellData : rowData) {
                 TextView cell = new TextView(ctx);
+                cell.setLayoutParams(cellLayout);
+                cell.setTypeface(Typeface.MONOSPACE);
+                cell.setTextSize(TypedValue.COMPLEX_UNIT_SP, FONT_SIZE);
                 cell.setBackgroundColor(Color.WHITE);
                 cell.setGravity(Gravity.CENTER);
-                cell.setText(c.getValue());
-                tblRow.addView(cell, tableRowParams);
+                cell.setText(cellData.getValue());
+                cell.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        System.out.println("igor " + cellData.getValue());
+                    }
+                });
+                tblRow.addView(cell);
             }
-            tableLayout.addView(tblRow, tableLayoutParams);
+            table.addView(tblRow);
         }
 
 //        ScrollView sv = new ScrollView(this);
 //        HorizontalScrollView hsv = new HorizontalScrollView(this);
 //        hsv.addView(tableLayout);
 //        sv.addView(hsv);
-        return tableLayout;
+        return table;
     }
-
-    public void zoom(Float scaleX, Float scaleY, PointF pivot) {
-        updateView2(scaleX, scaleY, pivot);
-    }
-
-    private void updateView2(Float scaleX, Float scaleY, PointF pivot) {
-//        if(th == -1) th = tableLyt.getHeight();
-//        th *= scaleY;
-        tableLyt.setPivotX(pivot.x);
-        tableLyt.setPivotY(pivot.y);
-        tableLyt.setScaleX(scaleX);
-        tableLyt.setScaleY(scaleY);
-
-//        RelativeLayout.LayoutParams rlp = new RelativeLayout.LayoutParams(mw - 100, th);
-//        resultHorizontalScrol.setLayoutParams(rlp);
-        rootLayout.requestLayout();
-        rootLayout.invalidate();
-        mHandler.sendEmptyMessageDelayed(UPDATE_TABLE, 300);
-    }
-
-//    private void updateView1(Float scaleX, Float scaleY, PointF pivot) {
-//        tableContainer.removeAllViews();
-//        ViewGroup tableViewParent = (ViewGroup) tableLyt.getParent();
-//        if (tableViewParent != null) tableViewParent.removeAllViews();
-//
-//        tableLyt.setPivotX(pivot.x);
-//        tableLyt.setPivotY(pivot.y);
-//        tableLyt.setScaleX(scaleX);
-//        tableLyt.setScaleY(scaleY);
-//
-//        ScrollView sv = new ScrollView(this);
-//        HorizontalScrollView hsv = new HorizontalScrollView(this);
-//        hsv.addView(tableLyt);
-//        sv.addView(hsv);
-//
-//        tableContainer.addView(sv);
-//        rootLayout.requestLayout();
-//        rootLayout.invalidate();
-//    }
 
     int getDistance(MotionEvent event) {
         int dx = (int) (event.getX(0) - event.getX(1));
@@ -268,5 +269,36 @@ public class TableResultActivity extends AppCompatActivity {
         return (int) (Math.sqrt(dx * dx + dy * dy));
     }
 
+    public void zoom(Float scaleXY, PointF pivot) {
+        resizeView(scaleXY);
+//        scaleView(scaleXY, pivot);
+    }
+
+    private void scaleView(Float scaleXY, PointF pivot) {
+        table.setPivotX(pivot.x);
+        table.setPivotY(pivot.y);
+        table.setScaleX(scaleXY);
+        table.setScaleY(scaleXY);
+
+        rootLayout.requestLayout();
+        rootLayout.invalidate();
+//        mHandler.sendEmptyMessageDelayed(UPDATE_TABLE, 300);
+    }
+
+    private void resizeView(Float scaleXY) {
+        for (int i = 0, rowsCnt = table.getChildCount(); i < rowsCnt; i++) {
+            View rowView = table.getChildAt(i);
+            if (rowView instanceof TableRow) {
+                TableRow row = (TableRow) rowView;
+                for (int j = 0, colsCnt = row.getChildCount(); j < colsCnt; j++) {
+                    View cellView = row.getChildAt(j);
+                    if (cellView instanceof TextView) {
+                        TextView cell = (TextView) cellView;
+                        cell.setTextSize(TypedValue.COMPLEX_UNIT_SP, FONT_SIZE + scaleXY);
+                    }
+                }
+            }
+        }
+    }
 
 }

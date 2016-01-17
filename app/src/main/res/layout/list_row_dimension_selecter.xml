@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/itemHeightMedium"
+    android:orientation="vertical"
+    android:padding="@dimen/dp">
+
+    <TextView
+        android:id="@+id/levelLbl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="@dimen/marginExtraSmall"
+        android:layout_toLeftOf="@+id/rowsImg"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:text="Some very very super super long long extra extra long level that I'll try ellipsize"
+        android:textColor="@color/black"
+        android:textSize="@dimen/mediumText" />
+
+    <FrameLayout
+        android:id="@+id/rowsImg"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="@dimen/marginSmall"
+        android:layout_toLeftOf="@+id/collsImg"
+        android:clickable="true"
+        android:foreground="@drawable/btnbgd_none">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/row" />
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/collsImg"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:clickable="true"
+        android:foreground="@drawable/btnbgd_none">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/column" />
+    </FrameLayout>
+
+</RelativeLayout>

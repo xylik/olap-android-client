@@ -1,4 +1,4 @@
-package com.fer.hr.demo;
+package com.fer.hr.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,12 +16,10 @@ import com.fer.hr.R;
 import com.fer.hr.data.Profile;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Properties;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;

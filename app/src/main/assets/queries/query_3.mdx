@@ -1,6 +1,15 @@
+WITH
+SET [~COLUMNS] AS
+    {[Location].[CountryHierarchy].[All Locations]}
+SET [~Time_TimeHierarchy_Year level] AS
+    {[Time].[TimeHierarchy].[2000]}
+SET [~Time_TimeHierarchy_Month level] AS
+    Exists({[Time].[TimeHierarchy].[Month level].Members}, [~Time_TimeHierarchy_Year level])
+SET [~Time_TimeHierarchy_Day level] AS
+    Exists({[Time].[TimeHierarchy].[Day level].Members}, [~Time_TimeHierarchy_Month level])
+SET [~ROWS] AS
+    Hierarchize({[~Time_TimeHierarchy_Year level], [~Time_TimeHierarchy_Month level], [~Time_TimeHierarchy_Day level]})
 SELECT
-NON EMPTY {[Location].[Country level].Members} ON COLUMNS,
-
-NON EMPTY {[Product].[Product level].Members} ON ROWS
-
+NON EMPTY CrossJoin([~COLUMNS], {[Measures].[Sales]}) ON COLUMNS,
+NON EMPTY [~ROWS] ON ROWS
 FROM [Sales cube]

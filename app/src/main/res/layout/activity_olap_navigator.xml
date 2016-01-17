@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/paddingMicro"
+    android:paddingTop="@dimen/paddingMicro"
+    android:background="@color/root_background">
+
+    <include
+        android:id="@+id/navigationBar"
+        layout="@layout/navigation_bar"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"/>
+
+    <LinearLayout
+        android:id="@+id/navigatorBtnsLyt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/navigationBar"
+        android:orientation="vertical"
+        android:layout_marginTop="@dimen/marginMedium"
+        android:layout_marginLeft="@dimen/marginMedium"
+        android:layout_marginRight="@dimen/marginMedium"
+        android:background="@drawable/rounded_white_bgd"
+        android:clickable="false">
+
+        <TextView
+            android:id="@+id/cubesTxt"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/itemHeightMedium"
+            android:paddingLeft="@dimen/paddingLarge"
+            android:paddingRight="@dimen/paddingSmall"
+            android:drawableRight="@drawable/arrow_next_icon"
+            android:gravity="center_vertical"
+            android:text="@string/cubes"
+            android:singleLine="true"
+            android:textColor="@color/cyan"
+            android:textSize="@dimen/textLarge"
+            android:ellipsize="end"
+            android:background="@drawable/btnbgd_tl_tr"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginLeft="@dimen/paddingLarge"
+            android:background="@color/light_gray" />
+
+
+        <TextView
+            android:id="@+id/measuresTxt"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/itemHeightMedium"
+            android:paddingLeft="@dimen/paddingLarge"
+            android:paddingRight="@dimen/paddingSmall"
+            android:drawableRight="@drawable/arrow_next_icon"
+            android:gravity="center_vertical"
+            android:paddingTop="@dimen/paddingMicro"
+            android:paddingBottom="@dimen/paddingMicro"
+            android:text="@string/measures"
+            android:singleLine="true"
+            android:textColor="@color/cyan"
+            android:textSize="@dimen/textLarge"
+            android:ellipsize="end"
+            android:background="@drawable/btnbgd_none"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginLeft="@dimen/paddingLarge"
+            android:background="@color/light_gray" />
+
+        <TextView
+            android:id="@+id/dimensionsTxt"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/itemHeightMedium"
+            android:paddingLeft="@dimen/paddingLarge"
+            android:paddingRight="@dimen/paddingSmall"
+            android:drawableRight="@drawable/arrow_next_icon"
+            android:gravity="center_vertical"
+            android:paddingTop="@dimen/paddingMicro"
+            android:paddingBottom="@dimen/paddingMicro"
+            android:text="@string/dimensions"
+            android:singleLine="true"
+            android:textColor="@color/cyan"
+            android:textSize="@dimen/textLarge"
+            android:ellipsize="end"
+            android:background="@drawable/btnbgd_bl_br"/>
+    </LinearLayout>
+
+    <!--<ListView-->
+        <!--android:id="@+id/dimensionsList"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_below="@+id/navigatorBtnsLyt"-->
+        <!--android:layout_above="@+id/controlBtnsLyt"-->
+        <!--android:layout_marginLeft="@dimen/marginLarge"-->
+        <!--android:layout_marginRight="@dimen/marginMedium"-->
+        <!--android:divider="@drawable/white_list_divier"-->
+        <!--android:dividerHeight="@dimen/dp"/>-->
+
+    <!--<LinearLayout-->
+        <!--android:id="@+id/controlBtnsLyt"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="@dimen/itemHeightMedium"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:layout_marginLeft="@dimen/marginMedium"-->
+        <!--android:layout_marginRight="@dimen/marginMedium"-->
+        <!--android:layout_marginBottom="@dimen/marginExtraSmall">-->
+
+        <!--<ImageButton-->
+            <!--android:id="@+id/cancelImg"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:padding="@dimen/padding"-->
+            <!--android:src="@drawable/delete_icon"-->
+            <!--android:layout_weight="1"-->
+            <!--android:background="@drawable/rounded_white_state_bgd"/>-->
+
+        <!--<View-->
+            <!--android:layout_width="2dp"-->
+            <!--android:layout_height="match_parent"/>-->
+
+        <!--<ImageButton-->
+            <!--android:id="@+id/executeImg"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:padding="@dimen/padding"-->
+            <!--android:src="@drawable/play_icon"-->
+            <!--android:layout_weight="1"-->
+            <!--android:background="@drawable/rounded_white_state_bgd"/>-->
+    <!--</LinearLayout>-->
+
+
+
+</RelativeLayout>

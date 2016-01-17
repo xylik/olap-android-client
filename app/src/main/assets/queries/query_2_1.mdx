@@ -1,0 +1,14 @@
+SELECT 
+  {
+    [Location.CountryHierarchy].[Croatia]
+   ,[Location.CountryHierarchy].[Serbia]
+  } ON COLUMNS
+ ,Hierarchize
+  (
+      {
+        [Product.ProductHierarchy].[Drinks]
+       ,[Product.ProductHierarchy].[Food]
+       ,[Product.ProductHierarchy].[Drinks].Children
+     }
+  ) ON ROWS
+FROM [Sales cube]

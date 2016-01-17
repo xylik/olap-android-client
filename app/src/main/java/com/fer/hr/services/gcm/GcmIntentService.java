@@ -1,4 +1,4 @@
-package com.fer.hr.gcm;
+package com.fer.hr.services.gcm;
 
 import android.app.IntentService;
 import android.app.Notification;
@@ -44,7 +44,7 @@ public class GcmIntentService extends IntentService {
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(this)
                         .setSmallIcon(R.drawable.icon_salam_notification)
-                        .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.icon))
+                        .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.salam_icon))
                         .setContentTitle(getString(R.string.app_name))
                         .setContentText(extras.getString("message"))
                         .setAutoCancel(true)

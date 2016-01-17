@@ -1,4 +1,4 @@
-package com.fer.hr.gcm;
+package com.fer.hr.services.gcm;
 
 import android.app.Activity;
 import android.content.ComponentName;

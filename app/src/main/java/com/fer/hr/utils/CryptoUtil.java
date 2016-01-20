@@ -8,9 +8,9 @@ import java.io.UnsupportedEncodingException;
 /**
  * Created by igor on 05/01/16.
  */
-public class AuthenticationUtil {
+public class CryptoUtil {
 
-    private AuthenticationUtil() {}
+    private CryptoUtil() {}
 
     public static String encodeBase64(String text) {
         byte[] encodedBytes = null;

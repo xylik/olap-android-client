@@ -12,6 +12,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.fer.hr.R;
+import com.fer.hr.model.CubeWithMetaData;
+import com.fer.hr.rest.dto.discover.SaikuCube;
 
 import java.util.List;
 
@@ -21,12 +23,12 @@ import butterknife.ButterKnife;
 /**
  * Created by igor on 15/01/16.
  */
-public class CubesListAdapter<T> extends ArrayAdapter<T> {
-    private List<T> cubesList;
+public class CubesListAdapter extends ArrayAdapter<SaikuCube> {
+    private List<SaikuCube> cubesList;
     private int selectedItemIndx = 0;
 
-    public CubesListAdapter(Context context, int layoutResId, List<T> cubesList) {
-        super(context, layoutResId, cubesList);
+    public CubesListAdapter(Context context, List<SaikuCube> cubesList) {
+        super(context, -1, cubesList);
         this.cubesList = cubesList;
     }
 
@@ -41,7 +43,7 @@ public class CubesListAdapter<T> extends ArrayAdapter<T> {
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
-        holder.cubeNameTxt.setText((String) getItem(position));
+        holder.cubeNameTxt.setText( getItem(position).getName() );
         holder.radioBtn.setChecked(selectedItemIndx == position);
         return convertView;
     }

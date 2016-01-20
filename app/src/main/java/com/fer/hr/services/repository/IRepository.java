@@ -1,6 +1,10 @@
 package com.fer.hr.services.repository;
 
-import com.fer.hr.model.CubeMeta;
+import com.fer.hr.model.CubeWithMetaData;
+import com.fer.hr.rest.dto.discover.SaikuCube;
+import com.fer.hr.rest.dto.discover.SaikuDimension;
+import com.fer.hr.rest.dto.discover.SaikuMeasure;
+import com.fer.hr.rest.dto.discover.SaikuMember;
 import com.fer.hr.services.common.Callback;
 import com.fer.hr.services.common.IService;
 
@@ -11,6 +15,14 @@ import java.util.List;
  */
 public interface IRepository extends IService {
 
-    void getAllCubesMeta(boolean refreshData, final Callback<List<CubeMeta>> callback);
+    void getFreshCubesMeta(final Callback<List<CubeWithMetaData>> callback);
+
+    List<CubeWithMetaData> getCubesMeta();
+
+    List<SaikuCube> getCubesFromAllConnections();
+
+    List<SaikuMeasure> getMeasuresForCube(SaikuCube cube);
+
+    List<SaikuDimension> getDimensionsForCube(SaikuCube cube);
 
 }

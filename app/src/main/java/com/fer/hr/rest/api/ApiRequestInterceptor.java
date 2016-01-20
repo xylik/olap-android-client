@@ -12,8 +12,6 @@ public class ApiRequestInterceptor implements RequestInterceptor {
 
     @Override
     public void intercept(RequestFacade request) {
-        Profile appProfile = new Profile(App.getAppContext());
-
-        request.addHeader("Authorization", appProfile.getAuthenticationToken());
+        request.addHeader("Authorization", App.getProfile().getAuthenticationToken());
     }
 }

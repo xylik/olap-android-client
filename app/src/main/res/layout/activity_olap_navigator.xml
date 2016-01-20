@@ -8,7 +8,7 @@
 
     <include
         android:id="@+id/navigationBar"
-        layout="@layout/navigation_bar"
+        layout="@layout/bar_olap_navigator"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"/>
 
@@ -32,7 +32,7 @@
             android:paddingRight="@dimen/paddingSmall"
             android:drawableRight="@drawable/arrow_next_icon"
             android:gravity="center_vertical"
-            android:text="@string/cubes"
+            android:text="Cubes"
             android:singleLine="true"
             android:textColor="@color/cyan"
             android:textSize="@dimen/textLarge"
@@ -56,7 +56,7 @@
             android:gravity="center_vertical"
             android:paddingTop="@dimen/paddingMicro"
             android:paddingBottom="@dimen/paddingMicro"
-            android:text="@string/measures"
+            android:text="Measures"
             android:singleLine="true"
             android:textColor="@color/cyan"
             android:textSize="@dimen/textLarge"
@@ -79,7 +79,7 @@
             android:gravity="center_vertical"
             android:paddingTop="@dimen/paddingMicro"
             android:paddingBottom="@dimen/paddingMicro"
-            android:text="@string/dimensions"
+            android:text="Dimensions"
             android:singleLine="true"
             android:textColor="@color/cyan"
             android:textSize="@dimen/textLarge"
@@ -92,20 +92,10 @@
         <!--android:layout_width="match_parent"-->
         <!--android:layout_height="wrap_content"-->
         <!--android:layout_below="@+id/navigatorBtnsLyt"-->
-        <!--android:layout_above="@+id/controlBtnsLyt"-->
         <!--android:layout_marginLeft="@dimen/marginLarge"-->
         <!--android:layout_marginRight="@dimen/marginMedium"-->
         <!--android:divider="@drawable/white_list_divier"-->
         <!--android:dividerHeight="@dimen/dp"/>-->
-
-    <!--<LinearLayout-->
-        <!--android:id="@+id/controlBtnsLyt"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="@dimen/itemHeightMedium"-->
-        <!--android:layout_alignParentBottom="true"-->
-        <!--android:layout_marginLeft="@dimen/marginMedium"-->
-        <!--android:layout_marginRight="@dimen/marginMedium"-->
-        <!--android:layout_marginBottom="@dimen/marginExtraSmall">-->
 
         <!--<ImageButton-->
             <!--android:id="@+id/cancelImg"-->

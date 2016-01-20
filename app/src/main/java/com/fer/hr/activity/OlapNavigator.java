@@ -3,34 +3,38 @@ package com.fer.hr.activity;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.SparseArray;
-import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
-import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
-import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.fer.hr.R;
 import com.fer.hr.activity.adapters.CubesListAdapter;
-import com.fer.hr.activity.adapters.MyExpandableListAdapter;
-import com.fer.hr.model.CubeMeta;
+import com.fer.hr.activity.adapters.MeasuresAdapter;
+import com.fer.hr.activity.adapters.DimensionsExpandableListAdapter;
+import com.fer.hr.model.Dimension;
+import com.fer.hr.model.Level;
+import com.fer.hr.model.QueryBuilder;
+import com.fer.hr.rest.dto.discover.SaikuCube;
+import com.fer.hr.rest.dto.discover.SaikuDimension;
+import com.fer.hr.rest.dto.discover.SaikuLevel;
+import com.fer.hr.rest.dto.discover.SaikuMeasure;
+import com.fer.hr.rest.dto.discover.SaikuMember;
+import com.fer.hr.services.ServiceProvider;
+import com.fer.hr.services.repository.IRepository;
+import com.fer.hr.utils.CubeMetaConverterUtil;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
 public class OlapNavigator extends AppCompatActivity {
-    @Bind(R.id.btnBack)
-    ImageButton btnBack;
-    @Bind(R.id.title)
-    TextView title;
-    @Bind(R.id.actionBtn)
-    ImageButton actionBtn;
+    private static final int DEFAULT_CUBE_INDX = 0;
     @Bind(R.id.cubesTxt)
     TextView cubesTxt;
     @Bind(R.id.measuresTxt)
@@ -38,46 +42,43 @@ public class OlapNavigator extends AppCompatActivity {
     @Bind(R.id.dimensionsTxt)
     TextView dimensionsTxt;
 
+    private IRepository repository;
+    private QueryBuilder queryBuilder;
+
+    private List<SaikuCube> cubes = new ArrayList<>();
+    private List<SaikuMeasure> cubeMeasures = new ArrayList<>();
+    private HashMap<Integer, Dimension> cubeDimensions = new HashMap<>();
+
     private CubesListAdapter cubesAdapter;
-    private ArrayAdapter<String> measuresAdapter;
-    private SparseArray<Group> groups;
-    private ExpandableListAdapter dimensionsAdapter;
-    private String user = "admin";
-    private List<CubeMeta> cubesMeta;
+    private MeasuresAdapter measuresAdapter;
+    private DimensionsExpandableListAdapter dimensionsAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_olap_navigator);
         ButterKnife.bind(this);
+        repository = (IRepository) ServiceProvider.getService(ServiceProvider.REPOSITORY);
+        queryBuilder = new QueryBuilder();
 
+        cubes.addAll(repository.getCubesFromAllConnections());
+        if (cubes.size() > 0) {
+            SaikuCube defaultCube = cubes.get(DEFAULT_CUBE_INDX);
+            cubeMeasures = repository.getMeasuresForCube(defaultCube);
+            List<SaikuDimension> dimensions = repository.getDimensionsForCube(defaultCube);
+            cubeDimensions = CubeMetaConverterUtil.convertToNestedListFormat(dimensions);
+        }
 
+        cubesAdapter = new CubesListAdapter(this, cubes);
+        measuresAdapter = new MeasuresAdapter(this, cubeMeasures);
+        dimensionsAdapter = new DimensionsExpandableListAdapter(this, cubeDimensions);
 
-        cubesAdapter = new CubesListAdapter<String>(
-                this, R.layout.list_row_text_radiobtn,
-                Arrays.asList("Sales cube", "Very long cube name", "Super super long cube name")
-        );
-
-        measuresAdapter = new ArrayAdapter<String>(
-                this, R.layout.list_row_text_checkbox, R.id.textLbl,
-                Arrays.asList("Sales measure", "Min measure", "Max measure", "Avg measure", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a")
-        );
-
-
-        dimensionsAdapter = new MyExpandableListAdapter(this, groups = createGroupsData());
-
-        initView();
         setActions();
-    }
-
-    private void initView() {
     }
 
     private void setActions() {
         cubesTxt.setOnClickListener(tv -> {
-            Dialog d = new Dialog(this);
-            d.setTitle(getString(R.string.cubes));
-            d.setContentView(R.layout.dialog_cubes);
+            Dialog d = createDialog(getString(R.string.cubes), R.layout.dialog_cubes);
             ListView lv = (ListView) d.findViewById(R.id.lv);
             lv.setAdapter(cubesAdapter);
             lv.setOnItemClickListener((av, rv, p, i) -> {
@@ -88,9 +89,7 @@ public class OlapNavigator extends AppCompatActivity {
         });
 
         measuresTxt.setOnClickListener(tv -> {
-            Dialog d = new Dialog(this);
-            d.setTitle(getString(R.string.measures));
-            d.setContentView(R.layout.dialog_measures);
+            Dialog d = createDialog(getString(R.string.measures), R.layout.dialog_measures);
             ListView lv = (ListView) d.findViewById(R.id.mesuresLst);
             lv.setAdapter(measuresAdapter);
             lv.setOnItemClickListener((av, rv, p, i) -> {
@@ -100,38 +99,75 @@ public class OlapNavigator extends AppCompatActivity {
             d.show();
         });
 
+        dimensionsAdapter.setOnChildClickListener(dimensionClickListener);
         dimensionsTxt.setOnClickListener(tv -> {
-            Dialog d = new Dialog(this);
-            d.setTitle(getString(R.string.dimensions));
-            d.setContentView(R.layout.dialog_dimensions);
+            Dialog d = createDialog(getString(R.string.dimensions), R.layout.dialog_dimensions);
             ExpandableListView lv = (ExpandableListView) d.findViewById(R.id.dimensionsLst);
             lv.setAdapter(dimensionsAdapter);
-            lv.setOnChildClickListener((parent, v, groupPosition, childPosition, id) -> {
-                System.out.println("igor groupPosition:" + groupPosition + " childPosition:" + childPosition);
-                return true;
-            });
             d.show();
         });
     }
 
-    public SparseArray<Group> createGroupsData() {
-        SparseArray<Group> groups = new SparseArray<>();
-        for (int j = 0; j < 5; j++) {
-            Group group = new Group("Test " + j);
-            for (int i = 0; i < 5; i++) {
-                group.children.add("Sub Item" + i);
+    private Dialog createDialog(String title, int layoutResourceId) {
+        Dialog d = new Dialog(this);
+        d.setTitle(title);
+        d.setContentView(layoutResourceId);
+        return d;
+    }
+
+    private final DimensionsExpandableListAdapter.OnChildItemClickListener dimensionClickListener = (view, groupPosition, childPosition, newState) -> {
+        ImageView v = (ImageView) view;
+        RelativeLayout parentView = (RelativeLayout) (v.getParent());
+        ImageView c = (ImageView) parentView.findViewById(R.id.collsImg);
+        ImageView r = (ImageView) parentView.findViewById(R.id.rowsImg);
+        ImageView f = (ImageView) parentView.findViewById(R.id.filterImg);
+        Level l = (Level) dimensionsAdapter.getChild(groupPosition, childPosition);
+        Level.State currentState = l.getState();
+
+        boolean isModified = false;
+        switch (newState) {
+            case NEUTRAL: {
+                if (currentState == Level.State.COLLUMNS) queryBuilder.removeFromColumns(l);
+                else if (currentState == Level.State.ROWS) queryBuilder.removeFromRows(l);
+                else if(currentState == Level.State.FILTER) {
+                    SaikuLevel sl = (SaikuLevel)l.getData();
+                    SaikuMember filter = new SaikuMember(sl.getDimensionUniqueName(), sl.getHierarchyUniqueName(), sl.getUniqueName(), sl.getCaption());
+                    queryBuilder.removeFromFilters(filter);
+                }
+                isModified = true;
+                break;
             }
-            groups.append(j, group);
+            case COLLUMNS:
+                isModified = queryBuilder.putOnColumns(l);
+                break;
+            case ROWS:
+                isModified = queryBuilder.putOnRows(l);
+                break;
+            case FILTER: {
+                SaikuLevel sl = (SaikuLevel)l.getData();
+                SaikuMember filter = new SaikuMember(sl.getDimensionUniqueName(), sl.getHierarchyUniqueName(), sl.getUniqueName(), sl.getCaption());
+                isModified = queryBuilder.putOnFilters(filter);
+            }
         }
-        return groups;
-    }
+        if (isModified) l.setState(newState);
+        else return;
 
-    public static class Group {
-        public String string;
-        public final List<String> children = new ArrayList<String>();
-
-        public Group(String string) {
-            this.string = string;
+        switch (currentState) {
+            case NEUTRAL:
+                v.setImageResource(R.drawable.delete_icon);
+                break;
+            case COLLUMNS:
+                c.setImageResource(R.drawable.column_icon);
+                if (c != v) v.setImageResource(R.drawable.delete_icon);
+                break;
+            case ROWS:
+                r.setImageResource(R.drawable.row_icon);
+                if (r != v) v.setImageResource(R.drawable.delete_icon);
+                break;
+            case FILTER:
+                f.setImageResource(R.drawable.filter_icon);
+                if (f != v) v.setImageResource(R.drawable.delete_icon);
+                break;
         }
-    }
+    };
 }

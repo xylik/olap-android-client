@@ -3,7 +3,7 @@ package com.fer.hr.services.authentication;
 import android.os.AsyncTask;
 
 import com.fer.hr.App;
-import com.fer.hr.utils.AuthenticationUtil;
+import com.fer.hr.utils.CryptoUtil;
 import com.fer.hr.services.ServiceProvider;
 import com.fer.hr.services.common.Callback;
 import com.fer.hr.services.gcm.IGCM;
@@ -23,6 +23,7 @@ public class SaikuRestAuthentication implements IAuthenticate {
         App.api.login(encodedCredentials, new retrofit.Callback<String>() {
             @Override
             public void success(String saikuToken, Response response) {
+                App.getProfile().setAuthenticationToken(saikuToken);
                 if (callback != null) callback.success(saikuToken);
             }
 
@@ -67,6 +68,6 @@ public class SaikuRestAuthentication implements IAuthenticate {
 
     private String getEncodedCredentials(String userName, String password) {
         String credentials = userName + ":" + password;
-        return "Basic " + AuthenticationUtil.encodeBase64(credentials);
+        return "Basic " + CryptoUtil.encodeBase64(credentials);
     }
 }

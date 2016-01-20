@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/actionbar"
+    android:layout_width="match_parent"
+    android:layout_height="45dp"
+    android:layout_alignParentTop="true"
+    android:background="#4ab1ea">
+
+    <ImageButton
+        android:id="@+id/cubeImgBtn"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_toLeftOf="@+id/measureImgBtn"
+        android:layout_marginRight="@dimen/marginExtraSmall"
+        android:padding="@dimen/paddingSmall"
+        android:src="@drawable/cube_icon"
+        android:background="@drawable/btnbgd_none"/>
+
+    <ImageButton
+        android:id="@+id/measureImgBtn"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_toLeftOf="@+id/dimensionImgBtn"
+        android:layout_marginRight="@dimen/marginExtraSmall"
+        android:padding="@dimen/paddingSmall"
+        android:src="@drawable/measure_icon"
+        android:background="@drawable/btnbgd_none"/>
+
+    <ImageButton
+        android:id="@+id/dimensionImgBtn"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_toLeftOf="@+id/playImgBtn"
+        android:layout_marginRight="@dimen/marginExtraSmall"
+        android:padding="@dimen/paddingSmall"
+        android:src="@drawable/dimension_icon"
+        android:background="@drawable/btnbgd_none"/>
+
+
+    <ImageButton
+        android:id="@+id/playImgBtn"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="@dimen/marginExtraSmall"
+        android:background="@drawable/btnbgd_none"
+        android:padding="@dimen/paddingSmall"
+        android:src="@drawable/play_icon" />
+
+</RelativeLayout>

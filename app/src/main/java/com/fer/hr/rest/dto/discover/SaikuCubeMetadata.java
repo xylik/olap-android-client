@@ -7,11 +7,11 @@ import java.util.Map;
 public class SaikuCubeMetadata {
 
     private final List<SaikuDimension> dimensions;
-    private final List<SaikuMember> measures;
+    private final List<SaikuMeasure> measures;
     private final Map<String, Object> properties;
 
 
-    public SaikuCubeMetadata(List<SaikuDimension> dimensions, List<SaikuMember> measures, Map<String, Object> properties) {
+    public SaikuCubeMetadata(List<SaikuDimension> dimensions, List<SaikuMeasure> measures, Map<String, Object> properties) {
         this.dimensions = dimensions;
         this.measures = measures;
         this.properties = properties;
@@ -28,7 +28,7 @@ public class SaikuCubeMetadata {
     /**
      * @return the measures
      */
-    public List<SaikuMember> getMeasures() {
+    public List<SaikuMeasure> getMeasures() {
         return measures;
     }
 

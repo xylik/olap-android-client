@@ -16,7 +16,7 @@ import android.widget.Toast;
 
 import com.fer.hr.R;
 import com.fer.hr.data.Profile;
-import com.fer.hr.model.CubeMeta;
+import com.fer.hr.model.CubeWithMetaData;
 import com.fer.hr.services.ServiceProvider;
 import com.fer.hr.services.authentication.IAuthenticate;
 import com.fer.hr.services.common.Callback;
@@ -109,7 +109,7 @@ public class LoginActivity extends AppCompatActivity {
         public void success(String saikuToken) {
             if (isRunning) {
                 clearFormData();
-                repositoryMng.getAllCubesMeta(true, cubesMetaCallback);
+                repositoryMng.getFreshCubesMeta(cubesMetaCallback);
             }
         }
 
@@ -120,16 +120,17 @@ public class LoginActivity extends AppCompatActivity {
         }
     };
 
-    private final Callback<List<CubeMeta>> cubesMetaCallback = new Callback<List<CubeMeta>>() {
+    private final Callback<List<CubeWithMetaData>> cubesMetaCallback = new Callback<List<CubeWithMetaData>>() {
         @Override
-        public void success(List<CubeMeta> result) {
-            progressBar.setVisibility(View.GONE);
-            startDashboardActivity();
+        public void success(List<CubeWithMetaData> result) {
+            if(isRunning) {
+                progressBar.setVisibility(View.GONE);
+                startDashboardActivity();
+            }
         }
 
         @Override
         public void failure(Exception e) {
-            e.printStackTrace();
             showErrorMsg(true);
         }
     };

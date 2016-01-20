@@ -1,53 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rootLyt"
     android:layout_width="match_parent"
     android:layout_height="@dimen/itemHeightMedium"
     android:orientation="vertical"
     android:padding="@dimen/dp">
 
-    <TextView
-        android:id="@+id/levelLbl"
+    <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
         android:layout_marginRight="@dimen/marginExtraSmall"
-        android:layout_toLeftOf="@+id/rowsImg"
-        android:ellipsize="end"
-        android:maxLines="2"
-        android:text="Some very very super super long long extra extra long level that I'll try ellipsize"
-        android:textColor="@color/black"
-        android:textSize="@dimen/mediumText" />
+        android:paddingLeft="@dimen/paddingMedium"
+        android:layout_toLeftOf="@+id/collsImg"
+        android:gravity="center_vertical"
+        android:orientation="vertical">
 
-    <FrameLayout
-        android:id="@+id/rowsImg"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
+        <TextView
+            android:id="@+id/levelLbl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="Year level"
+            android:textColor="@color/black"
+            android:textSize="@dimen/mediumText" />
+
+        <TextView
+            android:id="@+id/hierarchyLbl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="Time hierarchy"
+            android:textColor="@color/black"
+            android:textSize="@dimen/smallText" />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/collsImg"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:padding="@dimen/paddingExtraSmall"
         android:layout_centerVertical="true"
         android:layout_marginRight="@dimen/marginSmall"
-        android:layout_toLeftOf="@+id/collsImg"
-        android:clickable="true"
-        android:foreground="@drawable/btnbgd_none">
+        android:layout_toLeftOf="@+id/rowsImg"
+        android:src="@drawable/column_icon"
+        android:background="@drawable/btnbgd_none" />
 
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:src="@drawable/row" />
-    </FrameLayout>
+    <ImageView
+        android:id="@+id/rowsImg"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:padding="@dimen/paddingExtraSmall"
+        android:layout_toLeftOf="@+id/filterImg"
+        android:layout_marginRight="@dimen/marginSmall"
+        android:layout_centerVertical="true"
+        android:src="@drawable/row_icon"
+        android:background="@drawable/btnbgd_none" />
 
-    <FrameLayout
-        android:id="@+id/collsImg"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
+    <ImageView
+        android:id="@+id/filterImg"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:padding="@dimen/paddingExtraSmall"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
+        android:layout_marginRight="@dimen/marginSmall"
         android:layout_centerVertical="true"
-        android:clickable="true"
-        android:foreground="@drawable/btnbgd_none">
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:src="@drawable/column" />
-    </FrameLayout>
+        android:src="@drawable/filter_icon"
+        android:background="@drawable/btnbgd_none" />
 
 </RelativeLayout>

@@ -6,7 +6,7 @@
 
     <include
         android:id="@+id/navigationBar"
-        layout="@layout/navigation_bar"
+        layout="@layout/bar_navigation"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"/>
     

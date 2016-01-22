@@ -6,17 +6,11 @@
     android:paddingTop="@dimen/paddingMicro"
     android:background="@color/root_background">
 
-    <include
-        android:id="@+id/navigationBar"
-        layout="@layout/bar_olap_navigator"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"/>
-
     <LinearLayout
-        android:id="@+id/navigatorBtnsLyt"
+        android:id="@+id/selctionListContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/navigationBar"
+        android:layout_alignParentTop="true"
         android:orientation="vertical"
         android:layout_marginTop="@dimen/marginMedium"
         android:layout_marginLeft="@dimen/marginMedium"
@@ -24,68 +18,22 @@
         android:background="@drawable/rounded_white_bgd"
         android:clickable="false">
 
-        <TextView
-            android:id="@+id/cubesTxt"
+        <ExpandableListView
+            android:id="@+id/selectionLst"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/itemHeightMedium"
-            android:paddingLeft="@dimen/paddingLarge"
-            android:paddingRight="@dimen/paddingSmall"
-            android:drawableRight="@drawable/arrow_next_icon"
-            android:gravity="center_vertical"
-            android:text="Cubes"
-            android:singleLine="true"
-            android:textColor="@color/cyan"
-            android:textSize="@dimen/textLarge"
-            android:ellipsize="end"
-            android:background="@drawable/btnbgd_tl_tr"/>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginLeft="@dimen/paddingLarge"
-            android:background="@color/light_gray" />
-
-
-        <TextView
-            android:id="@+id/measuresTxt"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/itemHeightMedium"
-            android:paddingLeft="@dimen/paddingLarge"
-            android:paddingRight="@dimen/paddingSmall"
-            android:drawableRight="@drawable/arrow_next_icon"
-            android:gravity="center_vertical"
-            android:paddingTop="@dimen/paddingMicro"
-            android:paddingBottom="@dimen/paddingMicro"
-            android:text="Measures"
-            android:singleLine="true"
-            android:textColor="@color/cyan"
-            android:textSize="@dimen/textLarge"
-            android:ellipsize="end"
-            android:background="@drawable/btnbgd_none"/>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginLeft="@dimen/paddingLarge"
-            android:background="@color/light_gray" />
-
-        <TextView
-            android:id="@+id/dimensionsTxt"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/itemHeightMedium"
-            android:paddingLeft="@dimen/paddingLarge"
-            android:paddingRight="@dimen/paddingSmall"
-            android:drawableRight="@drawable/arrow_next_icon"
-            android:gravity="center_vertical"
-            android:paddingTop="@dimen/paddingMicro"
-            android:paddingBottom="@dimen/paddingMicro"
-            android:text="Dimensions"
-            android:singleLine="true"
-            android:textColor="@color/cyan"
-            android:textSize="@dimen/textLarge"
-            android:ellipsize="end"
-            android:background="@drawable/btnbgd_bl_br"/>
+            android:layout_height="wrap_content"
+            android:paddingLeft="@dimen/paddingSmall"
+            android:paddingRight="@dimen/paddingExtraSmall"
+            android:divider="@drawable/gray_list_divider"
+            android:dividerHeight="@dimen/dp"/>
     </LinearLayout>
+
+    <include
+        android:id="@+id/navigationBar"
+        layout="@layout/bar_olap_navigator"
+        android:layout_alignParentBottom="true"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"/>
 
     <!--<ListView-->
         <!--android:id="@+id/dimensionsList"-->

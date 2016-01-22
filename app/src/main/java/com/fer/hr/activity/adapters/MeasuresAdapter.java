@@ -44,7 +44,6 @@ public class MeasuresAdapter extends ArrayAdapter<SaikuMeasure> {
         SaikuMeasure member = checkedMembers.get(position);
         if(member == null) checkedMembers.put(position, getItem(position));
         else checkedMembers.remove(position);
-        notifyDataSetChanged();
     }
 
     @Override

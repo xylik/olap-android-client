@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="45dp"
     android:layout_alignParentTop="true"
-    android:background="#4ab1ea">
+    android:background="#4ab1ea"
+    android:gravity="center">
 
     <ImageButton
         android:id="@+id/cubeImgBtn"
@@ -30,12 +31,22 @@
         android:id="@+id/dimensionImgBtn"
         android:layout_width="45dp"
         android:layout_height="45dp"
-        android:layout_toLeftOf="@+id/playImgBtn"
+        android:layout_toLeftOf="@+id/mdxImgBtn"
         android:layout_marginRight="@dimen/marginExtraSmall"
         android:padding="@dimen/paddingSmall"
         android:src="@drawable/dimension_icon"
         android:background="@drawable/btnbgd_none"/>
 
+    <ImageButton
+        android:id="@+id/mdxImgBtn"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_toLeftOf="@+id/playImgBtn"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="@dimen/marginExtraSmall"
+        android:background="@drawable/btnbgd_none"
+        android:padding="@dimen/paddingSmall"
+        android:src="@drawable/mdx_icon" />
 
     <ImageButton
         android:id="@+id/playImgBtn"
@@ -47,5 +58,4 @@
         android:background="@drawable/btnbgd_none"
         android:padding="@dimen/paddingSmall"
         android:src="@drawable/play_icon" />
-
 </RelativeLayout>

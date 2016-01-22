@@ -23,11 +23,11 @@ import butterknife.ButterKnife;
 /**
  * Created by igor on 15/01/16.
  */
-public class CubesListAdapter extends ArrayAdapter<SaikuCube> {
+public class CubesAdapter extends ArrayAdapter<SaikuCube> {
     private List<SaikuCube> cubesList;
     private int selectedItemIndx = 0;
 
-    public CubesListAdapter(Context context, List<SaikuCube> cubesList) {
+    public CubesAdapter(Context context, List<SaikuCube> cubesList) {
         super(context, -1, cubesList);
         this.cubesList = cubesList;
     }

@@ -29,11 +29,12 @@ public class SaikuMember extends AbstractSaikuObject {
     }
 
     //TODO deploy -> remove construcotr, used for testing purposes
-    public SaikuMember(String dimensionUniqueName, String hierarchyUniqueName, String levelUniqueName, String uniqueName) {
+    public SaikuMember(String dimensionUniqueName, String hierarchyUniqueName, String levelUniqueName, String caption) {
         this.dimensionUniqueName = dimensionUniqueName;
         this.hierarchyUniqueName = hierarchyUniqueName;
         this.levelUniqueName = levelUniqueName;
-        super.uniqueName = uniqueName;
+        this.caption = caption;
+        super.uniqueName = levelUniqueName;
     }
 
     public SaikuMember(

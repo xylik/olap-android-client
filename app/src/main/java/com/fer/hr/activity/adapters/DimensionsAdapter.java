@@ -18,7 +18,7 @@ import java.util.HashMap;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class DimensionsExpandableListAdapter extends BaseExpandableListAdapter {
+public class DimensionsAdapter extends BaseExpandableListAdapter {
     public static interface OnChildItemClickListener {
         void onChildClick(View childView, int groupPosition, int childPosition, Level.State newState);
     }
@@ -28,7 +28,7 @@ public class DimensionsExpandableListAdapter extends BaseExpandableListAdapter {
     public Activity activity;
     private OnChildItemClickListener listener;
 
-    public DimensionsExpandableListAdapter(Activity activity, HashMap<Integer, Dimension> dimensions) {
+    public DimensionsAdapter(Activity activity, HashMap<Integer, Dimension> dimensions) {
         activity = activity;
         this.groups = dimensions;
         inflater = activity.getLayoutInflater();
@@ -60,7 +60,9 @@ public class DimensionsExpandableListAdapter extends BaseExpandableListAdapter {
         final ViewHolderRow holder = (ViewHolderRow) convertView.getTag();
 
         holder.levelLbl.setText(level.getData().getName());
-        holder.hierarchyLbl.setText(level.getData().getHierarchyUniqueName());
+//        holder.hierarchyLbl.setText(level.getData().getHierarchyUniqueName());
+        holder.hierarchyLbl.setVisibility(View.GONE);
+
 
         holder.collsImg.setImageResource(R.drawable.column_icon);
         holder.rowsImg.setImageResource(R.drawable.row_icon);
@@ -81,10 +83,10 @@ public class DimensionsExpandableListAdapter extends BaseExpandableListAdapter {
             Level.State newState = level.getState() != Level.State.ROWS?  Level.State.ROWS : Level.State.NEUTRAL;
             listener.onChildClick(holder.rowsImg, groupPosition, childPosition, newState);
         });
-        holder.filterImg.setOnClickListener(v -> {
-            Level.State newState = level.getState() != Level.State.FILTER?  Level.State.FILTER : Level.State.NEUTRAL;
-            listener.onChildClick(holder.filterImg, groupPosition,childPosition, newState);
-        });
+//        holder.filterImg.setOnClickListener(v -> {
+//            Level.State newState = level.getState() != Level.State.FILTER?  Level.State.FILTER : Level.State.NEUTRAL;
+//            listener.onChildClick(holder.filterImg, groupPosition,childPosition, newState);
+//        });
 
         return convertView;
     }

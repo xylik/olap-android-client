@@ -2,6 +2,7 @@ package com.fer.hr.utils;
 
 import com.fer.hr.model.Dimension;
 import com.fer.hr.model.Level;
+import com.fer.hr.model.SelectionGroup;
 import com.fer.hr.rest.dto.discover.SaikuDimension;
 import com.fer.hr.rest.dto.discover.SaikuHierarchy;
 import com.fer.hr.rest.dto.discover.SaikuLevel;
@@ -34,5 +35,20 @@ public class CubeMetaConverterUtil {
             result.put(group, new Dimension(d, levels));
         }
         return result;
+    }
+
+    public static HashMap<Integer, SelectionGroup> getEmptySelectionGroup() {
+        HashMap<Integer, SelectionGroup> selectionGroups = new HashMap<>();
+        SelectionGroup measureGroup = new SelectionGroup("Measures on Collumns", new ArrayList<>());
+        SelectionGroup collGroup = new SelectionGroup("Collumns", new ArrayList<>());
+        SelectionGroup rowGroup = new SelectionGroup("Rows", new ArrayList<>());
+        SelectionGroup filterGroup = new SelectionGroup("Filters", new ArrayList<>());
+
+        selectionGroups.put(0, measureGroup);
+        selectionGroups.put(1, collGroup);
+        selectionGroups.put(2, rowGroup);
+        selectionGroups.put(3, filterGroup);
+
+        return selectionGroups;
     }
 }

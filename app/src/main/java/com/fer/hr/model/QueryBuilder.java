@@ -1,11 +1,16 @@
 package com.fer.hr.model;
 
+import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
+import com.fer.hr.App;
+import com.fer.hr.R;
+import com.fer.hr.rest.dto.discover.SaikuCube;
 import com.fer.hr.rest.dto.discover.SaikuLevel;
 import com.fer.hr.rest.dto.discover.SaikuMeasure;
 import com.fer.hr.rest.dto.discover.SaikuMember;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -15,12 +20,23 @@ import java.util.List;
 public class QueryBuilder {
     private static enum Axis {COLLUMN, ROW, MEASURE, FILTER}
 
-    private List<Level> rowAxis = new ArrayList<>();
-    private List<Level> collAxis = new ArrayList<>();
+    private SaikuCube cube;
     private List<SaikuMeasure> measureAxis = new ArrayList<>();
+    private List<Level> collAxis = new ArrayList<>();
+    private List<Level> rowAxis = new ArrayList<>();
     private List<SaikuMember> filterAxis = new ArrayList<>();
+    private String mdx = "";
+
+    public void setCube(SaikuCube cube) {
+        this.cube = cube;
+    }
+
+    public void removeCube() {
+        this.cube = null;
+    }
 
     public boolean putOnColumns(Level level) {
+        mdx = "";
         boolean isAdded = false;
 
         if(collAxis.contains(level)) isAdded = false;
@@ -40,10 +56,12 @@ public class QueryBuilder {
     }
 
     public boolean removeFromColumns(Level level) {
+        mdx = "";
         return collAxis.remove(level);
     }
 
     public boolean putOnRows(Level level) {
+        mdx = "";
         boolean isAdded = false;
 
         if(rowAxis.contains(level)) isAdded = false;
@@ -63,10 +81,12 @@ public class QueryBuilder {
     }
 
     public boolean removeFromRows(Level level) {
+        mdx = "";
         return rowAxis.remove(level);
     }
 
     public boolean putOnMeasures(SaikuMeasure measure) {
+        mdx = "";
         if(measureAxis.contains(measure)) return false;
         else {
             measureAxis.add(measure);
@@ -75,10 +95,12 @@ public class QueryBuilder {
     }
 
     public boolean removeFromMeasures(SaikuMember measure) {
+        mdx = "";
         return measureAxis.remove(measure);
     }
 
     public boolean putOnFilters(SaikuMember filter) {
+        mdx = "";
         boolean isAdded = false;
 
         if(filterAxis.contains(filter)) isAdded = false;
@@ -101,6 +123,7 @@ public class QueryBuilder {
     }
 
     public boolean removeFromFilters(SaikuMember filter) {
+        mdx = "";
         return filterAxis.remove(filter);
     }
 
@@ -209,8 +232,125 @@ public class QueryBuilder {
         }
     }
 
+    public HashMap<Integer, SelectionGroup> getEntitySelection() {
+        HashMap<Integer, SelectionGroup> result = new HashMap<>();
+
+        List<SelectionEntity> measureEntites  = Stream.of(measureAxis)
+                .map(m -> new SelectionEntity(m.getUniqueName(), m.getCaption()))
+                .collect(Collectors.<SelectionEntity>toList());
+
+        List<SelectionEntity> collumnEntites  = Stream.of(collAxis)
+                .map(c -> new SelectionEntity(c.getData().getUniqueName(), c.getData().getCaption()))
+                .collect(Collectors.<SelectionEntity>toList());
+
+        List<SelectionEntity> rowEntites  = Stream.of(rowAxis)
+                .map(r -> new SelectionEntity(r.getData().getUniqueName(), r.getData().getCaption()))
+                .collect(Collectors.<SelectionEntity>toList());
+
+        List<SelectionEntity> filterEntites  = Stream.of(filterAxis)
+                .map(f -> new SelectionEntity(f.getUniqueName(), f.getCaption()))
+                .collect(Collectors.<SelectionEntity>toList());
+
+        result.put(0, new SelectionGroup(App.getAppContext().getString(R.string.measures), measureEntites));
+        result.put(1, new SelectionGroup(App.getAppContext().getString(R.string.collumns), collumnEntites));
+        result.put(2, new SelectionGroup(App.getAppContext().getString(R.string.rows), rowEntites));
+        result.put(3, new SelectionGroup(App.getAppContext().getString(R.string.filters), filterEntites));
+        return result;
+    }
+
+    public void removeEntity(SelectionEntity entity) {
+        mdx = "";
+        String entityUniqueName = entity.getUniqueName();
+        Stream.of(measureAxis)
+                .filter( m -> m.getUniqueName().equals(entityUniqueName) )
+                .findFirst()
+                .ifPresent(m -> {
+                    measureAxis.remove(m);
+                    //TODO fix state change should be handled here not in OlapNavigator.selectionListener
+                    return;
+                });
+
+        Stream.of(collAxis)
+                .filter(c -> c.getData().getUniqueName().equals(entityUniqueName))
+                .findFirst()
+                .ifPresent(c -> {
+                    collAxis.remove(c);
+                    c.setState(Level.State.NEUTRAL);
+                    return;
+                });
+
+        Stream.of(rowAxis)
+                .filter(r -> r.getData().getUniqueName().equals(entityUniqueName))
+                .findFirst()
+                .ifPresent(r -> {
+                    rowAxis.remove(r);
+                    r.setState(Level.State.NEUTRAL);
+                    return;
+                });
+
+        Stream.of(filterAxis)
+                .filter( f -> f.getUniqueName().equals(entityUniqueName) )
+                .findFirst()
+                .ifPresent(f -> {
+                    filterAxis.remove(f);
+                    //TODO fix state change should be handled here not in OlapNavigator.selectionListener
+                    return;
+                });
+    }
+
+    public void updateMdx(String mdx) {
+        this.mdx = mdx;
+    }
 
     public String buildMdx() {
-        return null;
+        if(!mdx.isEmpty()) return mdx;
+        else return buildNonTrivialMdx();
+    }
+
+    private String buildNonTrivialMdx() {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("SELECT ")
+        .append(crossJoinOrHierarchize(collAxis));
+        if(measureAxis.size() > 0) {
+            sb.append(" * {");
+            Stream.of(measureAxis).forEach(m -> sb.append("[Measures].[" + m.getName() + "],"));
+            sb.deleteCharAt(sb.length() - 1);
+            sb.append("} ");
+        }
+        sb.append("ON COLUMNS, ")
+        .append(crossJoinOrHierarchize(rowAxis))
+        .append("ON ROWS ")
+        .append("FROM ")
+        .append("[" + cube.getName() +"]");
+
+        return sb.toString();
+    }
+
+    private String crossJoinOrHierarchize(List<Level> axis) {
+        StringBuilder sb = new StringBuilder();
+        for(int i=0; i<axis.size(); i++){
+
+            boolean isHierarchyStart = true;
+            while(i + 1 < axis.size() && axis.get(i).getData().getHierarchyUniqueName().equals(axis.get(i + 1).getData().getHierarchyUniqueName())) {
+                SaikuLevel hLevel = axis.get(i).getData();
+                if(isHierarchyStart) {
+                    sb.append("Hierarchize({");
+                    isHierarchyStart = false;
+                }
+                sb.append(hLevel.getUniqueName().replaceFirst("\\]\\.\\[", ".") + ".Members,");
+                i++;
+            }
+            String levelUniqueName = axis.get(i).getData().getUniqueName();
+            String lNameFormated = levelUniqueName.replaceFirst("\\]\\.\\[", ".");
+            String lMemers = lNameFormated + ".Members";
+            String crossOperator =  (i == axis.size()-1) ? " " : " * ";
+
+            if(!isHierarchyStart) sb.append(lMemers + "}) ");
+            else sb.append(lMemers);
+
+            sb.append(crossOperator);
+        }
+        return sb.toString();
     }
 }

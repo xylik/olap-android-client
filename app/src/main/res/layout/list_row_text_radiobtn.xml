@@ -7,7 +7,6 @@
     android:orientation="horizontal">
 
     <LinearLayout
-        android:id="@+id/txtContainerLyt"
         android:layout_width="match_parent"
         android:layout_toLeftOf="@+id/radioBtn"
         android:layout_height="match_parent"
@@ -15,7 +14,7 @@
         android:gravity="center_vertical">
 
         <TextView
-            android:id="@+id/cubeNameTxt"
+            android:id="@+id/headerLbl"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ellipsize="end"
@@ -25,7 +24,7 @@
             android:textSize="@dimen/textMedium" />
 
         <TextView
-            android:id="@+id/cubeCatalogTxt"
+            android:id="@+id/descriptionLbl"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ellipsize="end"

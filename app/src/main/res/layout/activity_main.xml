@@ -5,7 +5,9 @@
     android:layout_height="match_parent"
     android:padding="16dp">
 
-
-        <TextView android:text="Hello World!" android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+    <ExpandableListView
+        android:id="@+id/dimensionsExpLst"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:groupIndicator="@null"/>
 </RelativeLayout>

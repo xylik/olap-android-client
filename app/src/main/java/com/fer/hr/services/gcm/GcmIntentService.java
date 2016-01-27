@@ -7,17 +7,21 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
-import android.os.Bundle;
 import android.os.Vibrator;
 import android.support.v4.app.NotificationCompat;
 
 import com.fer.hr.R;
+import com.fer.hr.activity.LoginActivity;
 import com.fer.hr.data.Profile;
+import com.fer.hr.model.PushReport;
+import com.google.gson.Gson;
 
 /**
  * Created by igor on 04/01/16.
  */
 public class GcmIntentService extends IntentService {
+    private static final String SERVER_MESSAGE_KEY = "message";
+    public static final String PUSH_RECEIVED = "PUSH_RECEIVED";
     private Profile appProfile;
 
     public GcmIntentService() {
@@ -27,17 +31,18 @@ public class GcmIntentService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         appProfile = new Profile(this);
-        Bundle extras = intent.getExtras();
-        // The getMessageType() intent parameter must be the intent you received
-        // in your BroadcastReceiver.
+        String msgJson = intent.getExtras().getString(SERVER_MESSAGE_KEY, "");
+        Gson gson = new Gson();
+        PushReport report = gson.fromJson(msgJson, PushReport.class);
+        appProfile.addPushReport(report);
 
-        //Intent resultIntent = new Intent(this, SplashActivity.class);
-        //resultIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        Intent resultIntent = new Intent(this, LoginActivity.class);
+        resultIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent resultPendingIntent =
                 PendingIntent.getActivity(
                         this,
                         1,
-                        new Intent(),
+                        resultIntent,
                         PendingIntent.FLAG_UPDATE_CURRENT
                 );
 
@@ -45,9 +50,10 @@ public class GcmIntentService extends IntentService {
                 new NotificationCompat.Builder(this)
                         .setSmallIcon(R.drawable.icon_salam_notification)
                         .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.salam_icon))
-                        .setContentTitle(getString(R.string.app_name))
-                        .setContentText(extras.getString("message"))
+                        .setContentTitle(getString(R.string.pushMsg))
+                        .setContentText(report.getReportName())
                         .setAutoCancel(true)
+
                         .setContentIntent(resultPendingIntent);
         Notification notification = mBuilder.build();
 
@@ -57,7 +63,7 @@ public class GcmIntentService extends IntentService {
         Vibrator v = (Vibrator) this.getSystemService(Context.VIBRATOR_SERVICE);
         v.vibrate(500);
 
-        this.sendBroadcast(new Intent("push_received"));
+        this.sendBroadcast(new Intent(PUSH_RECEIVED));
         stopSelf();
     }
 }

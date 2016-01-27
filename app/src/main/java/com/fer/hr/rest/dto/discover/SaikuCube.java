@@ -17,7 +17,6 @@ package com.fer.hr.rest.dto.discover;
 
 public class SaikuCube extends AbstractSaikuObject {
 
-
     private String connection;
     private String catalog;
     private String schema;

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <ExpandableListView
+        android:id="@+id/dimensionsExpLst"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/paddingSmall"
+        android:paddingRight="@dimen/paddingExtraSmall"
+        android:divider="@drawable/gray_list_divider"
+        android:dividerHeight="@dimen/dp"/>
+
+    <ListView
+        android:id="@+id/filterLst"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/dimensionsExpLst"
+        android:layout_marginTop="@dimen/paddingSmall"
+        android:divider="@drawable/gray_list_divider"
+        android:dividerHeight="1dp"
+        android:paddingLeft="@dimen/paddingLarge"
+        android:visibility="gone"/>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="@dimen/itemHeightMedium"
+        android:layout_height="@dimen/itemHeightMedium"
+        android:layout_centerInParent="true"
+        android:indeterminate="true"
+        android:background="@drawable/progress_color"
+        android:visibility="gone"/>
+</RelativeLayout>

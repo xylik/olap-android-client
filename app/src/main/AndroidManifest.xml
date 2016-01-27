@@ -29,8 +29,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar" >
 
-        <!-- .demo.LoginActivity" -->
-
         <activity
             android:name=".activity.LoginActivity"
             android:screenOrientation="portrait" >
@@ -62,18 +60,18 @@
         <activity
             android:name=".activity.MdxActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" >
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activity.ResultActivity"
             android:label="@string/title_activity_result"
-            android:theme="@style/AppTheme.NoActionBar" >
-        </activity>
-        <activity android:name=".activity.TableResultActivity" >
-        </activity>
-        <activity android:name=".activity.DashboardActivity" android:screenOrientation="portrait" >
-        </activity>
-        <activity android:name=".activity.OlapNavigator" android:screenOrientation="portrait"/>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".activity.TableResultActivity" />
+        <activity
+            android:name=".activity.DashboardActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.OlapNavigator"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

@@ -42,6 +42,9 @@ import retrofit.client.Response;
 
 public class TableResultActivity extends AppCompatActivity {
     private static final String CUBE_METADATA_PATH = "queries/testCube.properties";
+    public static final String MDX_KEY = "MDX_KEY";
+    public static final String CUBE_KEY = "CUBE_KEY";
+    public static final String TITLE_KEY = "TITLE_KEY";
 
     @Bind(R.id.rootLayout)
     RelativeLayout rootLayout;
@@ -88,10 +91,10 @@ public class TableResultActivity extends AppCompatActivity {
         initView();
         setActions();
 
-        String mdxQuery = getIntent().getStringExtra(MdxActivity.MDX_KEY);
-        SaikuCube cube = loadCubeDefinitionFromAssets(CUBE_METADATA_PATH);
+        String mdxQuery = getIntent().getStringExtra(MDX_KEY);
+//        SaikuCube cube = loadCubeDefinitionFromAssets(CUBE_METADATA_PATH);
+        SaikuCube cube = (SaikuCube)getIntent().getSerializableExtra(CUBE_KEY);
         ThinQuery tq = new ThinQuery(UUID.randomUUID().toString(), cube, mdxQuery);
-
         App.api.executeThinQuery(tq, new Callback<QueryResult>() {
             @Override
             public void success(QueryResult queryResult, Response response) {

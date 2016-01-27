@@ -10,7 +10,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.fer.hr.R;
-import com.fer.hr.rest.dto.discover.SaikuMeasure;
+import com.fer.hr.rest.dto.discover.SimpleCubeElement;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -23,44 +23,40 @@ import butterknife.ButterKnife;
 /**
  * Created by igor on 17/01/16.
  */
-public class MeasuresAdapter extends ArrayAdapter<SaikuMeasure> {
-    private LinkedHashMap<Integer, SaikuMeasure> checkedMembers = new LinkedHashMap<>();
+public class FilterAdapter extends ArrayAdapter<SimpleCubeElement> {
+    private LinkedHashMap<Integer, SimpleCubeElement> checkedMembers = new LinkedHashMap<>();
 
-    public MeasuresAdapter(Context context, List<SaikuMeasure> objects) {
+    public FilterAdapter(Context context, List<SimpleCubeElement> objects) {
         super(context, -1, objects);
     }
 
-    public List<SaikuMeasure> getCheckedItems() {
-        ArrayList<SaikuMeasure> result = new ArrayList<>();
+    public List<SimpleCubeElement> getCheckedItems() {
+        ArrayList<SimpleCubeElement> result = new ArrayList<>();
 
-        for (Map.Entry<Integer, SaikuMeasure> entry : checkedMembers.entrySet()) {
+        for (Map.Entry<Integer, SimpleCubeElement> entry : checkedMembers.entrySet()) {
             result.add(entry.getValue());
         }
         return result;
     }
 
     public void setCheckedItem(int position) {
-        SaikuMeasure member = checkedMembers.get(position);
+        SimpleCubeElement member = checkedMembers.get(position);
         if(member == null) checkedMembers.put(position, getItem(position));
         else checkedMembers.remove(position);
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder holder = null;
-
         if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = inflater.inflate(R.layout.list_row_text_checkbox, parent, false);
-            holder = new ViewHolder(convertView);
-            convertView.setTag(holder);
-        } else {
-            holder = (ViewHolder) convertView.getTag();
+            convertView.setTag(new ViewHolder(convertView));
         }
+        final ViewHolder holder = (ViewHolder)convertView.getTag();
 
-        holder.textLbl.setText(getItem(position).getName());
-        SaikuMeasure measure = checkedMembers.get(position);
-        holder.measureChkBox.setChecked(measure != null);
+        holder.textLbl.setText(getItem(position).getCaption());
+        SimpleCubeElement filter = checkedMembers.get(position);
+        holder.filterChkBox.setChecked(filter != null);
 
         return convertView;
     }
@@ -71,7 +67,7 @@ public class MeasuresAdapter extends ArrayAdapter<SaikuMeasure> {
         @Bind(R.id.textLbl)
         TextView textLbl;
         @Bind(R.id.itemChkBox)
-        CheckBox measureChkBox;
+        CheckBox filterChkBox;
 
         ViewHolder(View view) {
             ButterKnife.bind(this, view);

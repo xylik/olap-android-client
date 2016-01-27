@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/deleteLbl"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/itemHeightLarge"
+        android:background="@drawable/btnbgd_none"
+        android:gravity="left|center_vertical"
+        android:paddingLeft="@dimen/paddingLarge"
+        android:text="Delete"
+        android:textColor="@color/black"
+        android:textSize="@dimen/largeText" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="@color/divider_color" />
+
+    <TextView
+        android:id="@+id/cancelLbl"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/itemHeightLarge"
+        android:background="@drawable/btnbgd_none"
+        android:gravity="left|center_vertical"
+        android:paddingLeft="@dimen/paddingLarge"
+        android:text="Cancel"
+        android:textColor="@color/black"
+        android:textSize="@dimen/largeText" />
+
+</LinearLayout>

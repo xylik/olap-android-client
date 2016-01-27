@@ -8,11 +8,9 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.fer.hr.R;
-import com.fer.hr.model.CubeWithMetaData;
 import com.fer.hr.rest.dto.discover.SaikuCube;
 
 import java.util.List;
@@ -34,16 +32,15 @@ public class CubesAdapter extends ArrayAdapter<SaikuCube> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder holder;
         if (convertView == null) {
             LayoutInflater inflater = ((LayoutInflater) getContext().getSystemService(Service.LAYOUT_INFLATER_SERVICE));
             convertView = inflater.inflate(R.layout.list_row_text_radiobtn, parent, false);
-            holder = new ViewHolder(convertView);
-            convertView.setTag(holder);
-        } else {
-            holder = (ViewHolder) convertView.getTag();
+            convertView.setTag(new ViewHolder(convertView));
         }
+        final ViewHolder holder = (ViewHolder) convertView.getTag();
+
         holder.cubeNameTxt.setText( getItem(position).getName() );
+        holder.cubeCatalogTxt.setVisibility(View.GONE);
         holder.radioBtn.setChecked(selectedItemIndx == position);
         return convertView;
     }
@@ -56,18 +53,13 @@ public class CubesAdapter extends ArrayAdapter<SaikuCube> {
         this.selectedItemIndx = selectedItemIndx;
     }
 
-
     static class ViewHolder {
-        @Bind(R.id.cubeNameTxt)
+        @Bind(R.id.headerLbl)
         TextView cubeNameTxt;
-        @Bind(R.id.cubeCatalogTxt)
+        @Bind(R.id.descriptionLbl)
         TextView cubeCatalogTxt;
-        @Bind(R.id.txtContainerLyt)
-        LinearLayout txtContainerLyt;
         @Bind(R.id.radioBtn)
         RadioButton radioBtn;
-        @Bind(R.id.rootLyt)
-        RelativeLayout rootLyt;
 
         ViewHolder(View view) {
             ButterKnife.bind(this, view);

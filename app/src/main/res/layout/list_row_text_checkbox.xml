@@ -16,10 +16,10 @@
         android:singleLine="true"
         android:text="Sales measure"
         android:textColor="@color/black"
-        android:textSize="@dimen/largeText" />
+        android:textSize="@dimen/mediumText" />
 
     <CheckBox
-        android:id="@+id/measureChkBox"
+        android:id="@+id/itemChkBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:clickable="false"

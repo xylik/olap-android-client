@@ -1,6 +1,7 @@
 package com.fer.hr.utils;
 
 import com.fer.hr.model.Dimension;
+import com.fer.hr.model.Hierarchy;
 import com.fer.hr.model.Level;
 import com.fer.hr.model.SelectionGroup;
 import com.fer.hr.rest.dto.discover.SaikuDimension;
@@ -24,15 +25,20 @@ public class CubeMetaConverterUtil {
         int group = -1;
         for(SaikuDimension d: dimensions) {
             group++;
-            int position = -1;
-            ArrayList<Level> levels = new ArrayList<>();
+
+            ArrayList<Hierarchy> hierarchies = new ArrayList<>();
             for(SaikuHierarchy h: d.getHierarchies()) {
+
+                int position = -1;
+                ArrayList<Level> levels = new ArrayList<>();
                 for(SaikuLevel l: h.getLevels()) {
                     position++;
                     levels.add(new Level(Level.State.NEUTRAL, l, position));
                 }
+
+                hierarchies.add(new Hierarchy(h, levels));
             }
-            result.put(group, new Dimension(d, levels));
+            result.put(group, new Dimension(d, hierarchies));
         }
         return result;
     }

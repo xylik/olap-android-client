@@ -25,7 +25,6 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 
 public class MdxActivity extends AppCompatActivity {
-    public static final String MDX_KEY = "MDX_KEY";
     @Bind(R.id.btnBack)
     ImageButton btnBack;
     @Bind(R.id.title)
@@ -130,7 +129,7 @@ public class MdxActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(MdxActivity.this, TableResultActivity.class);
-                i.putExtra(MDX_KEY, mdxTxt.getText().toString());
+                i.putExtra(TableResultActivity.MDX_KEY, mdxTxt.getText().toString());
 
                 startActivity(i);
             }

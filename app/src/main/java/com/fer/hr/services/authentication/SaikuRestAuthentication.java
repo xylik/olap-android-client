@@ -17,6 +17,11 @@ import retrofit.client.Response;
 public class SaikuRestAuthentication implements IAuthenticate {
 
     @Override
+    public boolean isLogedIn() {
+        return App.getProfile().getAuthenticationToken() == null ? false : true;
+    }
+
+    @Override
     public void login(String userName, String password, Callback<String> callback) {
         String encodedCredentials = getEncodedCredentials(userName, password);
 

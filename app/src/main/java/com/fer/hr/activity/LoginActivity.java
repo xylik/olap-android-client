@@ -11,6 +11,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,6 +45,8 @@ public class LoginActivity extends AppCompatActivity {
     ProgressBar progressBar;
     @Bind(R.id.registerChk)
     CheckBox registerChk;
+    @Bind(R.id.contentRoot)
+    RelativeLayout contentRoot;
 
     private boolean isLogin = true;
     private Profile appProfile;
@@ -61,12 +64,17 @@ public class LoginActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         isRunning = true;
         appProfile = new Profile(this);
-
-        initView();
-        setActions();
-
         authenticationMng = (IAuthenticate) ServiceProvider.getService(ServiceProvider.AUTHENTICATION);
         repositoryMng = (IRepository) ServiceProvider.getService(ServiceProvider.REPOSITORY);
+
+        if (authenticationMng.isLogedIn()) {
+            contentRoot.setVisibility(View.GONE);
+            progressBar.setVisibility(View.VISIBLE);
+            repositoryMng.getFreshCubesMeta(cubesMetaCallback);
+        } else {
+            initView();
+            setActions();
+        }
     }
 
     @Override
@@ -108,7 +116,6 @@ public class LoginActivity extends AppCompatActivity {
         @Override
         public void success(String saikuToken) {
             if (isRunning) {
-                clearFormData();
                 repositoryMng.getFreshCubesMeta(cubesMetaCallback);
             }
         }
@@ -123,7 +130,7 @@ public class LoginActivity extends AppCompatActivity {
     private final Callback<List<CubeWithMetaData>> cubesMetaCallback = new Callback<List<CubeWithMetaData>>() {
         @Override
         public void success(List<CubeWithMetaData> result) {
-            if(isRunning) {
+            if (isRunning) {
                 progressBar.setVisibility(View.GONE);
                 startDashboardActivity();
             }
@@ -141,8 +148,11 @@ public class LoginActivity extends AppCompatActivity {
             if (isLogin) {
                 userPassword.setText("");
                 tstMsg = "Invalid email or password!";
-            }else if (isMeta) tstMsg = "Server problem please try later!";
-            else tstMsg = "User with provided email allready exists!";
+            } else if (isMeta) tstMsg = "Server problem please try later!";
+            else {
+                tstMsg = "User with provided email allready exists!";
+                clearFormData();
+            }
 
             progressBar.setVisibility(View.GONE);
             Toast toast = Toast.makeText(LoginActivity.this, tstMsg, Toast.LENGTH_SHORT);

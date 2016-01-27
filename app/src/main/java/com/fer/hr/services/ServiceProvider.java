@@ -2,10 +2,13 @@ package com.fer.hr.services;
 
 import com.fer.hr.App;
 import com.fer.hr.data.Constants;
+import com.fer.hr.services.authentication.IAuthenticate;
 import com.fer.hr.services.authentication.SaikuRestAuthentication;
 import com.fer.hr.services.common.IService;
 import com.fer.hr.services.common.ServiceException;
 import com.fer.hr.services.gcm.GCM;
+import com.fer.hr.services.gcm.IGCM;
+import com.fer.hr.services.repository.IRepository;
 import com.fer.hr.services.repository.SaikuRestRepository;
 
 /**
@@ -16,9 +19,9 @@ public class ServiceProvider {
     public static final int AUTHENTICATION = 2;
     public static final int GCM = 3;
 
-    private static SaikuRestAuthentication authenticationService;
-    private static SaikuRestRepository repositoryService;
-    private static com.fer.hr.services.gcm.GCM gcmService;
+    private static IAuthenticate authenticationService;
+    private static IRepository repositoryService;
+    private static IGCM gcmService;
 
 
     private ServiceProvider() {}

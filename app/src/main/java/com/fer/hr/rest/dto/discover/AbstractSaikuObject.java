@@ -15,7 +15,9 @@
  */
 package com.fer.hr.rest.dto.discover;
 
-public class AbstractSaikuObject implements ISaikuObject, Comparable<ISaikuObject> {
+import java.io.Serializable;
+
+public class AbstractSaikuObject implements ISaikuObject, Comparable<ISaikuObject>, Serializable {
   //TODO deploy -> change to private only for testing purpose
   protected String uniqueName;
   private String name;

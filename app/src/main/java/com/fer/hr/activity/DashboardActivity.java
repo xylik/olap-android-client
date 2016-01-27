@@ -1,6 +1,10 @@
 package com.fer.hr.activity;
 
+import android.app.Dialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ArrayAdapter;
@@ -9,14 +13,18 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.fer.hr.R;
+import com.fer.hr.activity.adapters.DashboardsAdapter;
 import com.fer.hr.data.Profile;
+import com.fer.hr.model.PushReport;
+import com.fer.hr.services.gcm.GcmIntentService;
 
-import java.util.Arrays;
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnItemClick;
+import butterknife.OnItemLongClick;
+import butterknife.OnLongClick;
 
 public class DashboardActivity extends AppCompatActivity {
     @Bind(R.id.btnBack)
@@ -30,8 +38,14 @@ public class DashboardActivity extends AppCompatActivity {
 
     private boolean isRunning;
     private Profile appProfile;
-    private List<String> listData;
-    private ArrayAdapter<String> listAdapter;
+    private List<PushReport> reports;
+    private DashboardsAdapter reportsAdapter;
+    private BroadcastReceiver pushReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            refreshReportsData();
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,9 +54,11 @@ public class DashboardActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         appProfile = new Profile(this);
         isRunning = true;
+        registerReceiver(pushReceiver, new IntentFilter(GcmIntentService.PUSH_RECEIVED));
 
-        listData = Arrays.asList(new String("AD HOC") );
-        listAdapter = new ArrayAdapter<String>(this, R.layout.list_row_picture_header_desc, R.id.headerLbl, listData);
+        reports = appProfile.getAllPushReports();
+        reportsAdapter = new DashboardsAdapter(this, reports);
+
         initView();
         setActions();
     }
@@ -51,6 +67,7 @@ public class DashboardActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         isRunning = false;
+        unregisterReceiver(pushReceiver);
     }
 
     @Override
@@ -60,7 +77,7 @@ public class DashboardActivity extends AppCompatActivity {
 
     private void initView() {
         title.setText(getString(R.string.dshboardActTitle));
-        dashboardsList.setAdapter(listAdapter);
+        dashboardsList.setAdapter(reportsAdapter);
     }
 
     private void setActions() {
@@ -73,7 +90,48 @@ public class DashboardActivity extends AppCompatActivity {
     }
 
     @OnItemClick(R.id.dashboardsList)
-    void onListClick(int position) {
-        if(position == 0) startActivity(new Intent(this, OlapNavigator.class));
+    void reportClick(int position) {
+        if (position == 0) startActivity(new Intent(this, OlapNavigator.class));
+        else {
+            PushReport r = reports.get(position);
+            Intent i = new Intent(this, TableResultActivity.class);
+            i.putExtra(TableResultActivity.TITLE_KEY, r.getReportName());
+            i.putExtra(TableResultActivity.MDX_KEY, r.getMdx());
+            i.putExtra(TableResultActivity.CUBE_KEY, r.getCube());
+            startActivity(i);
+        }
     }
+
+    @OnItemLongClick(R.id.dashboardsList)
+    boolean reportLongClick(int position) {
+        if(position <= 0)  return true;
+
+        final Dialog d = new Dialog(this);
+        d.setTitle("Choose action");
+        d.setContentView(R.layout.dialog_delete_report);
+        TextView delete = (TextView)d.findViewById(R.id.deleteLbl);
+        TextView cancel = (TextView)d.findViewById(R.id.cancelLbl);
+
+        PushReport p = reports.get(position);
+        delete.setOnClickListener(v -> {
+            reports.remove(position);
+            appProfile.removePushReport(p);
+            refreshReportsData();
+            d.dismiss();
+        });
+
+        cancel.setOnClickListener(v -> {
+            d.dismiss();
+        });
+        d.show();
+        return true;
+    }
+
+
+    private void refreshReportsData() {
+        reports.clear();
+        reports.addAll(appProfile.getAllPushReports());
+        reportsAdapter.notifyDataSetChanged();
+    }
+
 }

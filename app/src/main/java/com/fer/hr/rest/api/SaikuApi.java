@@ -1,11 +1,15 @@
 package com.fer.hr.rest.api;
 
+import com.fer.hr.rest.dto.discover.SimpleCubeElement;
 import com.fer.hr.rest.dto.queryResult.QueryResult;
 import com.fer.hr.rest.dto.license.License;
 import com.fer.hr.rest.dto.discover.SaikuConnection;
 import com.fer.hr.rest.dto.discover.SaikuCubeMetadata;
 import com.fer.hr.rest.dto.session.Session;
 import com.fer.hr.rest.dto.query2.ThinQuery;
+
+import java.util.List;
+
 import retrofit.Callback;
 import retrofit.ResponseCallback;
 import retrofit.http.Body;
@@ -91,4 +95,17 @@ public interface SaikuApi {
     @POST("/authentication/logout")
     void logout(@Field("authenticationToken")String token, Callback<String> response);
 
+//    @Path("/saiku/{username}/discover")
+//    @Path("/{connection}/{catalog}/{schema}/{cube}/dimensions/{dimension}/hierarchies/{hierarchy}/levels/{level}")
+    @GET("/saiku/{username}/discover/{connection}/{catalog}/{schema}/{cube}/dimensions/{dimension}/hierarchies/{hierarchy}/levels/{level}")
+    void getLevelMembers(
+            @Path("username")String username,
+            @Path("connection")String connection,
+            @Path("catalog")String catalog,
+            @Path("schema")String schema,
+            @Path("cube")String cube,
+            @Path("dimension")String dimension,
+            @Path("hierarchy")String hierarchy,
+            @Path("level")String levelk,
+            Callback<List<SimpleCubeElement>> callback);
 }

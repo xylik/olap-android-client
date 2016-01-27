@@ -3,6 +3,9 @@
     <string name="title_activity_login">LoginActivity</string>
     <string name="title_activity_result">ResultActivity</string>
 
+    <!--Push-->
+    <string name="pushMsg">New Report!</string>
+
     <!--DashboardActivity-->
     <string name="dshboardActTitle">Dashboards</string>
     <string name="cubes">Cubes</string>
@@ -14,4 +17,9 @@
     <string name="title_activity_material">Material</string>
     <string name="action_settings">Settings</string>
     <string name="section_format">Hello World from section: %1$d</string>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+
 </resources>

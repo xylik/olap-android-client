@@ -55,7 +55,7 @@ public class ResultActivity extends AppCompatActivity {
         initView();
         setActions();
 
-        String mdxQuery = getIntent().getStringExtra(MdxActivity.MDX_KEY);
+        String mdxQuery = getIntent().getStringExtra(TableResultActivity.MDX_KEY);
         SaikuCube cube = loadCubeDefinitionFromAssets(CUBE_METADATA_PATH);
         ThinQuery tq = new ThinQuery(UUID.randomUUID().toString(), cube, mdxQuery);
 

@@ -3,8 +3,10 @@ package com.fer.hr.services.repository;
 import com.fer.hr.model.CubeWithMetaData;
 import com.fer.hr.rest.dto.discover.SaikuCube;
 import com.fer.hr.rest.dto.discover.SaikuDimension;
+import com.fer.hr.rest.dto.discover.SaikuLevel;
 import com.fer.hr.rest.dto.discover.SaikuMeasure;
 import com.fer.hr.rest.dto.discover.SaikuMember;
+import com.fer.hr.rest.dto.discover.SimpleCubeElement;
 import com.fer.hr.services.common.Callback;
 import com.fer.hr.services.common.IService;
 
@@ -25,4 +27,5 @@ public interface IRepository extends IService {
 
     List<SaikuDimension> getDimensionsForCube(SaikuCube cube);
 
+    void getMembersForLevel(SaikuCube cube, SaikuLevel level, final Callback<List<SimpleCubeElement>> callback);
 }

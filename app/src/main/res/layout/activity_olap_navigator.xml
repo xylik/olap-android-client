@@ -35,39 +35,4 @@
         android:layout_height="wrap_content"
         android:layout_width="match_parent"/>
 
-    <!--<ListView-->
-        <!--android:id="@+id/dimensionsList"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_below="@+id/navigatorBtnsLyt"-->
-        <!--android:layout_marginLeft="@dimen/marginLarge"-->
-        <!--android:layout_marginRight="@dimen/marginMedium"-->
-        <!--android:divider="@drawable/white_list_divier"-->
-        <!--android:dividerHeight="@dimen/dp"/>-->
-
-        <!--<ImageButton-->
-            <!--android:id="@+id/cancelImg"-->
-            <!--android:layout_width="0dp"-->
-            <!--android:layout_height="match_parent"-->
-            <!--android:padding="@dimen/padding"-->
-            <!--android:src="@drawable/delete_icon"-->
-            <!--android:layout_weight="1"-->
-            <!--android:background="@drawable/rounded_white_state_bgd"/>-->
-
-        <!--<View-->
-            <!--android:layout_width="2dp"-->
-            <!--android:layout_height="match_parent"/>-->
-
-        <!--<ImageButton-->
-            <!--android:id="@+id/executeImg"-->
-            <!--android:layout_width="0dp"-->
-            <!--android:layout_height="match_parent"-->
-            <!--android:padding="@dimen/padding"-->
-            <!--android:src="@drawable/play_icon"-->
-            <!--android:layout_weight="1"-->
-            <!--android:background="@drawable/rounded_white_state_bgd"/>-->
-    <!--</LinearLayout>-->
-
-
-
 </RelativeLayout>

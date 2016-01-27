@@ -8,6 +8,8 @@ import com.fer.hr.services.common.IService;
  */
 public interface IAuthenticate extends IService {
 
+    boolean isLogedIn();
+
     void login(String userName, String password, final Callback<String> callback);
 
     void register(String userName, String password, final Callback<String> callback);

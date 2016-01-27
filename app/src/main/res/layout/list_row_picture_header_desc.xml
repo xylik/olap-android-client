@@ -23,7 +23,7 @@
         android:layout_marginTop="@dimen/marginSmall"
         android:ellipsize="end"
         android:text="Header"
-        android:textSize="@dimen/largeText"
+        android:textSize="@dimen/mediumText"
         android:textStyle="bold"/>
 
     <TextView

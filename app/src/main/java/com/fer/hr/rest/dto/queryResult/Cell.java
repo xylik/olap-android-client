@@ -19,6 +19,10 @@ import java.util.Properties;
 
 
 public class Cell  {
+	public static final String DIMENSION_PROP = "dimension";
+	public static final String HIERARCHY_PROP = "hierarchy";
+	public static final String LEVEL_PROP = "level";
+	public static final String UNIQUE_NAME_PROP = "uniquename";
 
 	private String value;
 	private String type;

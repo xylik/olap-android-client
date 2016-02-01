@@ -11,13 +11,13 @@ import android.util.TypedValue;
 public class PixelUtil {
     private PixelUtil() {}
 
-    public int dpToPx(int dp, Context ctx) {
+    public static int dpToPx(int dp, Context ctx) {
         DisplayMetrics displayMetrics = ctx.getResources().getDisplayMetrics();
         int px = Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
         return px;
     }
 
-    public int pxToDp(int px, Context ctx) {
+    public static int pxToDp(int px, Context ctx) {
         DisplayMetrics displayMetrics = ctx.getResources().getDisplayMetrics();
         int dp = Math.round(px / (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
         return dp;

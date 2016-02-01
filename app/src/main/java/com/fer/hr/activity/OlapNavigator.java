@@ -74,7 +74,7 @@ public class OlapNavigator extends AppCompatActivity {
         setContentView(R.layout.activity_olap_navigator);
         ButterKnife.bind(this);
         repository = (IRepository) ServiceProvider.getService(ServiceProvider.REPOSITORY);
-        queryBuilder = new QueryBuilder();
+        queryBuilder = QueryBuilder.instance();
         isRunning = true;
         frgMng = getSupportFragmentManager();
 
@@ -100,6 +100,7 @@ public class OlapNavigator extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         isRunning = false;
+        queryBuilder.clear();
     }
 
     private void setActions() {
@@ -168,6 +169,7 @@ public class OlapNavigator extends AppCompatActivity {
         });
 
         playImgBtn.setOnClickListener(v -> {
+            TableResultActivity.mdxHistory.clear();
             Intent i = new Intent(this, TableResultActivity.class);
             i.putExtra(TableResultActivity.MDX_KEY, queryBuilder.buildMdx());
             i.putExtra(TableResultActivity.CUBE_KEY, cubes.get(cubesAdapter.getSelectedItemIndx()));

@@ -33,7 +33,7 @@ public class ServiceProvider {
                 return authenticationService;
             }
             case REPOSITORY:{
-                if(repositoryService == null) repositoryService = new SaikuRestRepository();
+                if(repositoryService == null) repositoryService = SaikuRestRepository.instance();
                 return repositoryService;
             }
             case GCM: {

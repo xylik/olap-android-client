@@ -7,6 +7,8 @@ import com.fer.hr.rest.dto.discover.SaikuLevel;
 import com.fer.hr.rest.dto.discover.SaikuMeasure;
 import com.fer.hr.rest.dto.discover.SaikuMember;
 import com.fer.hr.rest.dto.discover.SimpleCubeElement;
+import com.fer.hr.rest.dto.query2.ThinQuery;
+import com.fer.hr.rest.dto.queryResult.QueryResult;
 import com.fer.hr.services.common.Callback;
 import com.fer.hr.services.common.IService;
 
@@ -27,5 +29,9 @@ public interface IRepository extends IService {
 
     List<SaikuDimension> getDimensionsForCube(SaikuCube cube);
 
+    List<SaikuLevel> getLevelsOfHierarchy(SaikuCube cube, String hierarchyUniqueName);
+
     void getMembersForLevel(SaikuCube cube, SaikuLevel level, final Callback<List<SimpleCubeElement>> callback);
+
+    void executeThinQuery(ThinQuery query, Callback<QueryResult> callback);
 }

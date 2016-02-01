@@ -4,19 +4,41 @@ import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
 import com.fer.hr.App;
 import com.fer.hr.R;
+import com.fer.hr.activity.fragments.DrillFragment;
 import com.fer.hr.rest.dto.discover.SaikuCube;
 import com.fer.hr.rest.dto.discover.SaikuLevel;
 import com.fer.hr.rest.dto.discover.SaikuMeasure;
 import com.fer.hr.rest.dto.discover.SaikuMember;
+import com.fer.hr.rest.dto.queryResult.Cell;
+import com.fer.hr.services.ServiceProvider;
+import com.fer.hr.services.repository.IRepository;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+
 /**
  * Created by igor on 19/01/16.
  */
 public class QueryBuilder {
+    public static String ROW_H = "ROW_HEADER";
+    public static String COL_H = "COLUMN_HEADER";
+    public static String ROW_HH = "ROW_HEADER_HEADER";
+
+    private static QueryBuilder instance;
+
+    private QueryBuilder() {
+    }
+
+    public static synchronized QueryBuilder instance() {
+        if (instance == null) {
+            instance = new QueryBuilder();
+            repository = (IRepository) ServiceProvider.getService(ServiceProvider.REPOSITORY);
+        }
+        return instance;
+    }
+
     private static enum Axis {COLLUMN, ROW, MEASURE, FILTER}
 
     private SaikuCube cube = new SaikuCube("", "", "", "", "", "");
@@ -25,6 +47,7 @@ public class QueryBuilder {
     private List<Level> rowAxis = new ArrayList<>();
     private List<SaikuMember> filterAxis = new ArrayList<>();
     private String mdx = "";
+    private static IRepository repository;
 
     public void clear() {
         cube = new SaikuCube("", "", "", "", "", "");
@@ -48,9 +71,9 @@ public class QueryBuilder {
         boolean isAdded = false;
 
         if (collAxis.contains(level)) isAdded = false;
-        else if (checkIfEntityDimensionIsPresentOnOtherAxis(Axis.COLLUMN, level)) isAdded = false;
-        else if (checkIfEntityHierachyConflictsWithAxisHierarchies(Axis.COLLUMN, level))
-            isAdded = false;
+//        else if (checkIfEntityDimensionIsPresentOnOtherAxis(Axis.COLLUMN, level)) isAdded = false;
+//        else if (checkIfEntityHierachyConflictsWithAxisHierarchies(Axis.COLLUMN, level)) isAdded = false;
+        else if (checkForConflictsWithHierarchyMembers(Axis.COLLUMN, level)) isAdded = false;
         else {
             rowAxis.remove(level);
             Stream.of(filterAxis)
@@ -74,9 +97,9 @@ public class QueryBuilder {
         boolean isAdded = false;
 
         if (rowAxis.contains(level)) isAdded = false;
-        else if (checkIfEntityDimensionIsPresentOnOtherAxis(Axis.ROW, level)) isAdded = false;
-        else if (checkIfEntityHierachyConflictsWithAxisHierarchies(Axis.ROW, level))
-            isAdded = false;
+//        else if (checkIfEntityDimensionIsPresentOnOtherAxis(Axis.ROW, level)) isAdded = false;
+//        else if (checkIfEntityHierachyConflictsWithAxisHierarchies(Axis.ROW, level)) isAdded = false;
+        else if (checkForConflictsWithHierarchyMembers(Axis.ROW, level)) isAdded = false;
         else {
             collAxis.remove(level);
             Stream.of(filterAxis)
@@ -114,9 +137,9 @@ public class QueryBuilder {
         boolean isAdded = false;
 
         if (filterAxis.contains(filter)) isAdded = false;
-        else if (checkIfEntityDimensionIsPresentOnOtherAxis(Axis.FILTER, filter)) isAdded = false;
-        else if (checkIfEntityHierachyConflictsWithAxisHierarchies(Axis.FILTER, filter))
-            isAdded = false;
+//        else if (checkIfEntityDimensionIsPresentOnOtherAxis(Axis.FILTER, filter)) isAdded = false;
+//        else if (checkIfEntityHierachyConflictsWithAxisHierarchies(Axis.FILTER, filter)) isAdded = false;
+        else if (checkForConflictsWithHierarchyMembers(Axis.FILTER, filter)) isAdded = false;
         else {
             Stream.of(collAxis)
                     .filter(l -> l.getData().getUniqueName().equals(filter.getLevelUniqueName()))
@@ -214,6 +237,48 @@ public class QueryBuilder {
         else return false;
     }
 
+    private boolean checkForConflictsWithHierarchyMembers(Axis excludeAxis, Object excludeEntity) {
+        boolean isOnOtherAxis = false;
+        switch (excludeAxis) {
+            case COLLUMN: {
+                SaikuLevel excludedLevel = ((Level) excludeEntity).getData(); //click happened on collumns so excludeElement is for sure of Level type
+                long rowMatchCnt = Stream.of(rowAxis)
+                        .filter(l -> l.getData().getHierarchyUniqueName().equals(excludedLevel.getHierarchyUniqueName()))
+                        .filter(l -> l != excludeEntity).count(); //filter excludeElement from rowAxis -> true only when excludedElement is present on rowAxis and we want to move it columnAxis
+                long filterMatchCnt = Stream.of(filterAxis)
+                        .filter(fm -> fm.getHierarchyUniqueName().equals(excludedLevel.getHierarchyUniqueName()))
+                        .filter(fm -> !fm.getLevelUniqueName().equals(excludedLevel.getUniqueName())).count(); //filter all members of excludedElement from filter axis --> true only when members of excludedElement are present on filterAxis and we want to "move" them to columnAxis
+                if (rowMatchCnt > 0 || filterMatchCnt > 0) isOnOtherAxis = true;
+                break;
+            }
+            case ROW: {
+                SaikuLevel excludedLevel = ((Level) excludeEntity).getData();
+                long collumnMatchCnt = Stream.of(collAxis)
+                        .filter(l -> l.getData().getHierarchyUniqueName().equals(excludedLevel.getHierarchyUniqueName()))
+                        .filter(l -> l != excludeEntity).count();
+                long filterMatchCnt = Stream.of(filterAxis)
+                        .filter(fm -> fm.getHierarchyUniqueName().equals(excludedLevel.getHierarchyUniqueName()))
+                        .filter(fm -> !fm.getLevelUniqueName().equals(excludedLevel.getUniqueName())).count();
+                if (collumnMatchCnt > 0 || filterMatchCnt > 0) isOnOtherAxis = true;
+                break;
+            }
+            case FILTER: {
+                SaikuMember excludedFilter = (SaikuMember) excludeEntity;
+                long collumnMatchCnt = Stream.of(collAxis)
+                        .filter(l -> l.getData().getHierarchyUniqueName().equals(excludedFilter.getHierarchyUniqueName()))
+                        .filter(l -> !l.getData().getUniqueName().equals(excludedFilter.getLevelUniqueName())).count(); //filter all levels which excludedFilter belongs to
+                long rowMatchCnt = Stream.of(rowAxis)
+                        .filter(l -> l.getData().getHierarchyUniqueName().equals(excludedFilter.getHierarchyUniqueName()))
+                        .filter(l -> !l.getData().getUniqueName().equals(excludedFilter.getLevelUniqueName())).count();
+                if (collumnMatchCnt > 0 || rowMatchCnt > 0) isOnOtherAxis = true;
+                break;
+            }
+            default:
+                throw new IllegalArgumentException("Unexpected input!");
+        }
+        return isOnOtherAxis;
+    }
+
     private void insertEntityInHierachy(Axis destinationAxis, Object entity) {
         switch (destinationAxis) {
             case COLLUMN:
@@ -239,6 +304,221 @@ public class QueryBuilder {
             default:
                 throw new IllegalArgumentException("Unexpected input!");
         }
+    }
+
+
+    public String drillDown(Cell c) {
+        DrillFragment.AxisPosition position;
+        if (c.getType().equals(COL_H)) position = DrillFragment.AxisPosition.COLS;
+        else if (c.getType().equals(ROW_H)) position = DrillFragment.AxisPosition.ROWS;
+        else return null;
+
+        String levelUniqueName = c.getProperties().getProperty(Cell.LEVEL_PROP);
+        StringBuilder sb = new StringBuilder();
+        sb.append("SELECT Non Empty ")
+                .append(position == DrillFragment.AxisPosition.COLS ?
+                        crossJoinOrHierarchizeWithDrill(collAxis, c) : crossJoinOrHierarchize(collAxis));
+        if (measureAxis.size() > 0) {
+            sb.append(" * {");
+            Stream.of(measureAxis).forEach(m -> sb.append("[Measures].[" + m.getName() + "],"));
+            sb.replace(sb.length() - 1, sb.length(), "} ");
+        }
+        sb.append("ON COLUMNS, Non Empty ")
+                .append(position == DrillFragment.AxisPosition.ROWS ?
+                        crossJoinOrHierarchizeWithDrill(rowAxis, c) : crossJoinOrHierarchize(rowAxis))
+                .append("ON ROWS ")
+                .append("FROM ")
+                .append("[" + cube.getName() + "] ");
+        if (filterAxis.size() > 0)
+            sb.append("WHERE (")
+                    .append(groupAndCrossJoin(filterAxis))
+                    .append(")");
+
+        return sb.toString();
+    }
+
+    public String drillUp(Cell c) {
+        return null;
+    }
+
+    public String buildMdx() {
+        if (!mdx.isEmpty()) return mdx;
+        else {
+            StringBuilder sb = new StringBuilder();
+
+            sb.append("SELECT Non Empty ")
+                    .append(crossJoinOrHierarchize(collAxis));
+            if (measureAxis.size() > 0) {
+                sb.append(" * {");
+                Stream.of(measureAxis).forEach(m -> sb.append("[Measures].[" + m.getName() + "],"));
+                sb.replace(sb.length() - 1, sb.length(), "} ");
+            }
+            sb.append("ON COLUMNS, Non Empty ")
+                    .append(crossJoinOrHierarchize(rowAxis))
+                    .append("ON ROWS ")
+                    .append("FROM ")
+                    .append("[" + cube.getName() + "] ");
+
+            if (filterAxis.size() > 0)
+                sb.append("WHERE (")
+                        .append(groupAndCrossJoin(filterAxis))
+                        .append(")");
+
+            return sb.toString();
+        }
+    }
+
+    private String crossJoinOrHierarchize(List<Level> axis) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < axis.size(); i++) {
+
+            boolean isHierarchyStart = true;
+            while (i + 1 < axis.size() && axis.get(i).getData().getHierarchyUniqueName().equals(axis.get(i + 1).getData().getHierarchyUniqueName())) {
+                SaikuLevel hLevel = axis.get(i).getData();
+                if (isHierarchyStart) {
+                    sb.append("Hierarchize({");
+                    isHierarchyStart = false;
+                }
+                sb.append(hLevel.getUniqueName() + ".Members,");
+                i++;
+            }
+            String levelUniqueName = axis.get(i).getData().getUniqueName();
+            String lMemers = levelUniqueName + ".Members";
+            String crossOperator = (i == axis.size() - 1) ? " " : " * ";
+
+            if (!isHierarchyStart) sb.append(lMemers + "}) ");
+            else sb.append(lMemers);
+
+            sb.append(crossOperator);
+        }
+        return sb.toString();
+    }
+
+    private String groupAndCrossJoin(List<SaikuMember> members) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < members.size(); i++) {
+
+            boolean isFilterGroupStart = true;
+            while (i + 1 < members.size() && members.get(i).getLevelUniqueName().equals(members.get(i + 1).getLevelUniqueName())) {
+                SaikuMember fLevel = members.get(i);
+                if (isFilterGroupStart) {
+                    sb.append("{");
+                    isFilterGroupStart = false;
+                }
+                sb.append(fLevel.getUniqueName() + ", ");
+                i++;
+            }
+            String f = members.get(i).getUniqueName();
+            String crossOperator = (i == members.size() - 1) ? " " : " * ";
+
+            if (!isFilterGroupStart) sb.append(f + "} ");
+            else sb.append(f);
+
+            sb.append(crossOperator);
+        }
+        return sb.toString();
+    }
+
+
+    private String crossJoinOrHierarchizeWithDrill(List<Level> axis, Cell c) {
+        StringBuilder sb = new StringBuilder();
+        StringBuilder hsb = null;
+
+        for (int i = 0; i < axis.size(); i++) {
+
+            boolean isHierarchyStart = true;
+            while (i + 1 < axis.size() && axis.get(i).getData().getHierarchyUniqueName().equals(axis.get(i + 1).getData().getHierarchyUniqueName())) {
+                SaikuLevel hLevel = axis.get(i).getData();
+                if (isHierarchyStart) {
+                    hsb = new StringBuilder();
+                    hsb.append("Hierarchize({");
+                    isHierarchyStart = false;
+                }
+                hsb.append(hLevel.getUniqueName() + ".Members,");
+                i++;
+            }
+            String crossOperator = (i == axis.size() - 1) ? " " : " * ";
+            SaikuLevel l = axis.get(i).getData();
+            String lUniqueName = l.getUniqueName();
+            String lMembers = lUniqueName + ".Members";
+            String cHierarchy = c.getProperties().getProperty(Cell.HIERARCHY_PROP);
+
+            //"uniquename": "[Customer].[Customers].[Canada].[BC]"
+            if (!isHierarchyStart) {
+                hsb.append(lMembers + "})"); //close hierarchy with last member
+
+                if (cHierarchy.equals(l.getHierarchyUniqueName())) { //if drill cell belongs to currently processed level hierarchy
+                    sb.append("DrillDownMember(")
+                            .append(hsb.toString())
+                            .append(", {")
+                            .append(getDrillKey(l, c))
+                            .append("}, RECURSIVE)");
+                } else sb.append(hsb.toString()); //add hierarchized levels to query
+            } else if (cHierarchy.equals(l.getHierarchyUniqueName())) {
+                sb.append("DrillDownMember(")
+                        .append(lMembers)
+                        .append(", {")
+                        .append(getDrillKey(l, c))
+                        .append("}, RECURSIVE)");
+            } else {   //drill cell doesn't belong to currently processed level hierarhcy
+                sb.append(lMembers);
+            }
+
+            sb.append(crossOperator);
+        }
+        return sb.toString();
+    }
+
+    /*
+        Hierarchize({
+            Customer.Customers.Country.Members,
+            Customer.Customers.[State Province].Members
+        }),
+        {
+            Customer.Customers.[State Province].&WA&USA,		--with WA Children included
+            Customer.Customers.City.&Yakima&WA&USA				--with Yakima Children included
+        }
+     */
+    private String getDrillKey(SaikuLevel currentLevel, Cell c) {
+        String cHierarchy = c.getProperties().getProperty(Cell.HIERARCHY_PROP);
+        String cLevel = c.getProperties().getProperty(Cell.LEVEL_PROP);
+        String cUniqueName = c.getProperties().getProperty(Cell.UNIQUE_NAME_PROP);
+
+        String[] cellKeys = cUniqueName.substring(cHierarchy.length() + ".[".length(), cUniqueName.length()).split("[\\]\\[\\.]+");
+        String cellKey = "";
+        StringBuilder sb = new StringBuilder();
+        for (int k = cellKeys.length - 1; k >= 0; k--) cellKey += "&[" + cellKeys[k] + "]";
+
+        List<SaikuLevel> hLelvels = repository.getLevelsOfHierarchy(cube, cHierarchy);
+        boolean shouldSkipLevel = true;
+        for (int i = 0, end = hLelvels.size(); i < end && i <= cellKeys.length; i++) { //ignore all levels on path up to currentLevel in level hierarchy
+            SaikuLevel l = hLelvels.get(i);
+            if (shouldSkipLevel && !l.equals(currentLevel)) continue;
+            shouldSkipLevel = false;
+            sb.append(cHierarchy)
+                    .append(".[" + l.getName() + "].")
+                    .append(getLevelKey(i, cellKeys) + ", ");
+        }
+        sb.delete(sb.lastIndexOf(", "), sb.length());
+
+        return sb.toString();
+    }
+
+    /*
+    0       1       2       3       4
+    All     Country State   City    Name
+            USA     WA      Yakima  [Charles Wilson]
+     */
+    private String getLevelKey(int levelDepth, String[] cellKeys) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = levelDepth - 1; i >= 0; i--) { //i=1 skip [All] level
+            sb.append("&[" + cellKeys[i] + "]");
+        }
+        return sb.toString();
+    }
+
+    public void updateMdx(String mdx) {
+        this.mdx = mdx;
     }
 
     public HashMap<Integer, SelectionGroup> getEntitySelection() {
@@ -307,89 +587,5 @@ public class QueryBuilder {
                     //TODO fix state change should be handled here not in OlapNavigator.selectionListener
                     return;
                 });
-    }
-
-    public void updateMdx(String mdx) {
-        this.mdx = mdx;
-    }
-
-    public String buildMdx() {
-        if (!mdx.isEmpty()) return mdx;
-        else {
-            StringBuilder sb = new StringBuilder();
-
-            sb.append("SELECT ")
-                    .append(crossJoinOrHierarchize(collAxis));
-            if (measureAxis.size() > 0) {
-                sb.append(" * {");
-                Stream.of(measureAxis).forEach(m -> sb.append("[Measures].[" + m.getName() + "],"));
-                sb.replace(sb.length() - 1, sb.length(), "} ");
-            }
-            sb.append("ON COLUMNS, ")
-                    .append(crossJoinOrHierarchize(rowAxis))
-                    .append("ON ROWS ")
-                    .append("FROM ")
-                    .append("[" + cube.getName() + "] ");
-
-            if (filterAxis.size() > 0)
-                sb.append("WHERE (")
-                        .append(groupAndCroosJoin(filterAxis))
-                        .append(")");
-
-            return sb.toString();
-        }
-    }
-
-    private String crossJoinOrHierarchize(List<Level> axis) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < axis.size(); i++) {
-
-            boolean isHierarchyStart = true;
-            while (i + 1 < axis.size() && axis.get(i).getData().getHierarchyUniqueName().equals(axis.get(i + 1).getData().getHierarchyUniqueName())) {
-                SaikuLevel hLevel = axis.get(i).getData();
-                if (isHierarchyStart) {
-                    sb.append("Hierarchize({");
-                    isHierarchyStart = false;
-                }
-                sb.append(hLevel.getUniqueName().replaceFirst("\\]\\.\\[", ".") + ".Members,");
-                //TODO remove replace it's not necessary
-                i++;
-            }
-            String levelUniqueName = axis.get(i).getData().getUniqueName();
-            String lNameFormated = levelUniqueName.replaceFirst("\\]\\.\\[", ".");
-            String lMemers = lNameFormated + ".Members";
-            String crossOperator = (i == axis.size() - 1) ? " " : " * ";
-
-            if (!isHierarchyStart) sb.append(lMemers + "}) ");
-            else sb.append(lMemers);
-
-            sb.append(crossOperator);
-        }
-        return sb.toString();
-    }
-
-    private String groupAndCroosJoin(List<SaikuMember> members) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < members.size(); i++) {
-
-            boolean isFilterGroupStart = true;
-            while (i + 1 < members.size() && members.get(i).getLevelUniqueName().equals(members.get(i + 1).getLevelUniqueName())) {
-                SaikuMember fLevel = members.get(i);
-                if (isFilterGroupStart) {
-                    sb.append("{");
-                    isFilterGroupStart = false;
-                }
-                sb.append(fLevel.getUniqueName() + ", ");
-                i++;
-            }
-            String f = members.get(i).getUniqueName();
-            String crossOperator = (i == members.size() - 1) ? " " : " * ";
-
-            if (!isFilterGroupStart) sb.append(f + "} ");
-            else sb.append(f);
-
-            sb.append(crossOperator);
-        }
-        return sb.toString();
     }
 }

@@ -1,7 +1,9 @@
 package com.fer.hr.services.repository;
 
 import android.os.AsyncTask;
+import android.widget.Toast;
 
+import com.annimon.stream.Stream;
 import com.fer.hr.App;
 import com.fer.hr.model.CubeWithMetaData;
 import com.fer.hr.rest.dto.discover.SaikuCatalog;
@@ -9,17 +11,23 @@ import com.fer.hr.rest.dto.discover.SaikuConnection;
 import com.fer.hr.rest.dto.discover.SaikuCube;
 import com.fer.hr.rest.dto.discover.SaikuCubeMetadata;
 import com.fer.hr.rest.dto.discover.SaikuDimension;
+import com.fer.hr.rest.dto.discover.SaikuHierarchy;
 import com.fer.hr.rest.dto.discover.SaikuLevel;
 import com.fer.hr.rest.dto.discover.SaikuMeasure;
 import com.fer.hr.rest.dto.discover.SaikuMember;
 import com.fer.hr.rest.dto.discover.SaikuSchema;
 import com.fer.hr.rest.dto.discover.SimpleCubeElement;
+import com.fer.hr.rest.dto.query2.ThinQuery;
+import com.fer.hr.rest.dto.queryResult.QueryResult;
 import com.fer.hr.services.common.Callback;
 import com.fer.hr.data.Constants;
 import com.fer.hr.services.common.ServiceException;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -28,9 +36,22 @@ import retrofit.client.Response;
  * Created by igor on 17/01/16.
  */
 public class SaikuRestRepository implements IRepository {
+    private static SaikuRestRepository instance;
+    private SimpleCacheManger cacheMng;
+
     private String user = Constants.DEFAULT_USER;
     private List<CubeWithMetaData> cubesFromAllConnectionsWithMetaData;
     private List<SaikuCube> cubesFromAllConnections = new ArrayList<>();
+
+    private SaikuRestRepository() {
+        this.cacheMng = SimpleCacheManger.instance();
+    }
+
+    public static SaikuRestRepository instance() {
+        if(instance == null) instance = new SaikuRestRepository();
+
+        return instance;
+    }
 
     @Override
     public void getFreshCubesMeta(Callback<List<CubeWithMetaData>> callback) {
@@ -39,7 +60,8 @@ public class SaikuRestRepository implements IRepository {
 
     @Override
     public List<CubeWithMetaData> getCubesMeta() {
-        if (cubesFromAllConnectionsWithMetaData != null) return cubesFromAllConnectionsWithMetaData;
+        if(cacheMng.getCubesMeta() != null) return cacheMng.getCubesMeta();
+//        else if (cubesFromAllConnectionsWithMetaData != null) return cubesFromAllConnectionsWithMetaData;
 
         SaikuConnection[] connections = App.api.getConnectionsMetadata(user);
         cubesFromAllConnections = new ArrayList<>();
@@ -52,6 +74,7 @@ public class SaikuRestRepository implements IRepository {
                 }
             }
         }
+        cacheMng.setCubesFromAllConnections(cubesFromAllConnections);
 
         ArrayList<CubeWithMetaData> cubesMeta = new ArrayList<>();
         for (SaikuCube c : cubesFromAllConnections) {
@@ -63,12 +86,12 @@ public class SaikuRestRepository implements IRepository {
 
     @Override
     public List<SaikuCube> getCubesFromAllConnections() {
-        return cubesFromAllConnections;
+        return cacheMng.getCubesFromAllConnections();
     }
 
     @Override
     public List<SaikuMeasure> getMeasuresForCube(SaikuCube cube) {
-        for (CubeWithMetaData metaCube : cubesFromAllConnectionsWithMetaData) {
+        for (CubeWithMetaData metaCube : cacheMng.getCubesMeta()) {
             if (metaCube.getCube() == cube) return metaCube.getSaikuCubeMetadata().getMeasures();
         }
         return null;
@@ -76,10 +99,21 @@ public class SaikuRestRepository implements IRepository {
 
     @Override
     public List<SaikuDimension> getDimensionsForCube(SaikuCube cube) {
-        for (CubeWithMetaData metaCube : cubesFromAllConnectionsWithMetaData) {
-            if (metaCube.getCube() == cube) return metaCube.getSaikuCubeMetadata().getDimensions();
+        for (CubeWithMetaData metaCube : cacheMng.getCubesMeta()) {
+            if (metaCube.getCube().equals(cube)) return metaCube.getSaikuCubeMetadata().getDimensions();
         }
         return null;
+    }
+
+    @Override
+    public List<SaikuLevel> getLevelsOfHierarchy(SaikuCube cube, String hierarchyUniqueName) {
+        List<SaikuDimension> cubeDimensions = getDimensionsForCube(cube);
+        List<SaikuLevel> hierarchyLevels = new ArrayList<>();
+        for(SaikuDimension d : cubeDimensions)
+            for(SaikuHierarchy h : d.getHierarchies())
+                if(h.getUniqueName().equals(hierarchyUniqueName))
+                    return h.getLevels();
+        return hierarchyLevels;
     }
 
     @Override
@@ -111,6 +145,35 @@ public class SaikuRestRepository implements IRepository {
         );
     }
 
+    @Override
+    public void executeThinQuery(ThinQuery query, Callback<QueryResult> callback) {
+        QueryResult cachedResult = cacheMng.getResultForQuery(query.getMdx());
+        if(cachedResult != null) {
+            callback.success(cachedResult);
+            return;
+        }
+
+        Map<String, Object> p = query.getProperties();
+        p.put("saiku.olap.query.filter", true);
+        p.put("saiku.olap.query.nonempty", true);
+        p.put("saiku.olap.query.nonempty.columns", true);
+        p.put("saiku.olap.query.nonempty.rows", true);
+        p.put("saiku.olap.result.formatter", "flat");
+        p.put("saiku.ui.render.mode", "table");
+
+        App.api.executeThinQuery(query, new retrofit.Callback<QueryResult>() {
+            @Override
+            public void success(QueryResult queryResult, Response response) {
+                cacheMng.addQueryResult(query.getMdx(), queryResult);
+                if(callback != null) callback.success(queryResult);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                if(callback != null) callback.failure(error);
+            }
+        });
+    }
 
     private class CubesMetaTask extends AsyncTask<Callback<List<CubeWithMetaData>>, Void, List<CubeWithMetaData>> {
         private Callback<List<CubeWithMetaData>> callback;
@@ -142,6 +205,7 @@ public class SaikuRestRepository implements IRepository {
         protected void onPostExecute(List<CubeWithMetaData> cubesMeta) {
             if (callback != null) {
                 if (cubesMeta != null) {
+                    cacheMng.setCubesMeta(cubesMeta);
                     SaikuRestRepository.this.cubesFromAllConnectionsWithMetaData = cubesMeta;
                     callback.success(cubesMeta);
                 } else callback.failure(ex);

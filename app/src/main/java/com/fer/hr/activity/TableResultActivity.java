@@ -1,12 +1,14 @@
 package com.fer.hr.activity;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.PointF;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -21,30 +23,33 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.fer.hr.App;
 import com.fer.hr.R;
+import com.fer.hr.activity.fragments.DrillFragment;
+import com.fer.hr.model.QueryBuilder;
 import com.fer.hr.rest.dto.discover.SaikuCube;
 import com.fer.hr.rest.dto.query2.ThinQuery;
 import com.fer.hr.rest.dto.queryResult.Cell;
 import com.fer.hr.rest.dto.queryResult.QueryResult;
+import com.fer.hr.services.ServiceProvider;
+import com.fer.hr.services.common.Callback;
+import com.fer.hr.services.repository.IRepository;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Properties;
+import java.util.Stack;
 import java.util.UUID;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
 
 public class TableResultActivity extends AppCompatActivity {
     private static final String CUBE_METADATA_PATH = "queries/testCube.properties";
-    public static final String MDX_KEY = "MDX_KEY";
     public static final String CUBE_KEY = "CUBE_KEY";
+    public static final String MDX_KEY = "MDX_KEY";
     public static final String TITLE_KEY = "TITLE_KEY";
+    public static Stack<String> mdxHistory = new Stack<>();
 
     @Bind(R.id.rootLayout)
     RelativeLayout rootLayout;
@@ -66,7 +71,11 @@ public class TableResultActivity extends AppCompatActivity {
     float mRatio = 1.0f;
     int mBaseDist;
     float mBaseRatio;
-    private QueryResult queryResult;
+    private FragmentManager frgMng;
+    private SaikuCube cube;
+    private IRepository repository;
+    private QueryBuilder queryBuilder;
+    private int screenOrientation;
 
     private float mx, my;
 
@@ -87,43 +96,36 @@ public class TableResultActivity extends AppCompatActivity {
         setContentView(R.layout.activity_table_result);
         ButterKnife.bind(this);
         isRunning = true;
+        frgMng = getSupportFragmentManager();
+        repository = (IRepository) ServiceProvider.getService(ServiceProvider.REPOSITORY);
 
         initView();
         setActions();
 
-        String mdxQuery = getIntent().getStringExtra(MDX_KEY);
 //        SaikuCube cube = loadCubeDefinitionFromAssets(CUBE_METADATA_PATH);
-        SaikuCube cube = (SaikuCube)getIntent().getSerializableExtra(CUBE_KEY);
-        ThinQuery tq = new ThinQuery(UUID.randomUUID().toString(), cube, mdxQuery);
-        App.api.executeThinQuery(tq, new Callback<QueryResult>() {
-            @Override
-            public void success(QueryResult queryResult, Response response) {
-                if (isRunning) {
-                    if (queryResult.getCellset() == null) {
-                        Toast.makeText(TableResultActivity.this, "MDX Syntax/Semantic error!", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    TableResultActivity.this.queryResult = queryResult;
-                    table = createTableLayout(null, queryResult, queryResult.getHeight(), 0);
-                    hScroll.addView(table);
-                }
-            }
+        queryBuilder = QueryBuilder.instance();
+        cube = (SaikuCube) getIntent().getSerializableExtra(CUBE_KEY);
+        String mdx;
+        if(!mdxHistory.isEmpty()) mdx = mdxHistory.pop();
+        else mdx = getIntent().getStringExtra(MDX_KEY);
+        renderTable(mdx);
 
-            @Override
-            public void failure(RetrofitError error) {
-                if (isRunning) {
-                    Toast.makeText(TableResultActivity.this, "Server error!", Toast.LENGTH_SHORT).show();
-                    error.printStackTrace();
-                }
-            }
-        });
-
+        screenOrientation = getResources().getConfiguration().orientation;
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         isRunning = false;
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mdxHistory.size() >= 2) {
+            mdxHistory.pop(); //remove current mdx
+            String previousMdx = mdxHistory.pop(); //remove previosMdx
+            renderTable(previousMdx);
+        } else super.onBackPressed();
     }
 
     @Override
@@ -219,7 +221,8 @@ public class TableResultActivity extends AppCompatActivity {
 
         TableRow.LayoutParams rowLayout = new TableRow.LayoutParams(TableLayout.LayoutParams.WRAP_CONTENT, TableLayout.LayoutParams.WRAP_CONTENT);
 
-        TableRow.LayoutParams cellLayout = new TableRow.LayoutParams(TableLayout.LayoutParams.WRAP_CONTENT, TableLayout.LayoutParams.WRAP_CONTENT);
+        int cellHeight = (int)getResources().getDimension(R.dimen.itemHeightSmall);
+        TableRow.LayoutParams cellLayout = new TableRow.LayoutParams(TableLayout.LayoutParams.WRAP_CONTENT, cellHeight);
         cellLayout.setMargins(1, 1, 1, 1);
 //        cellLayout.weight = 1;
 
@@ -233,7 +236,6 @@ public class TableResultActivity extends AppCompatActivity {
 //            tblHeader.addView(cell, tableRowParams);
 //        }
 //        tableLayout.addView(tblHeader, tableLayoutParams);
-
         for (int i = startPos, resSize = queryResult.getHeight(), end = i + rowsPerPage; i < resSize && i < end; i++) {
             TableRow tblRow = new TableRow(ctx);
             tblRow.setLayoutParams(rowLayout);
@@ -248,17 +250,54 @@ public class TableResultActivity extends AppCompatActivity {
                 cell.setBackgroundColor(Color.WHITE);
                 cell.setGravity(Gravity.CENTER);
                 cell.setText(cellData.getValue());
-                cell.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        System.out.println("igor " + cellData.getValue());
+                cell.setBackgroundResource(R.drawable.btnbgd_none_white);
+
+                DrillFragment.AxisPosition position = null;
+                if (cellData.getType().equals(QueryBuilder.ROW_H))
+                    position = DrillFragment.AxisPosition.ROWS;
+                else if (cellData.getType().equals(QueryBuilder.COL_H))
+                    position = DrillFragment.AxisPosition.COLS;
+                if (position != null) {
+                    if(screenOrientation == Configuration.ORIENTATION_LANDSCAPE) {
+                        cell.setOnLongClickListener(c -> {
+                            DrillFragment f = new DrillFragment(cellData, queryBuilder);
+                            f.show(frgMng, f.TAG);
+                            return true;
+                        });
                     }
-                });
+                    else {
+//                        cell.setOnClickListener(new View.OnClickListener() {
+//                            private int k = 0;
+//
+//                            @Override
+//                            public void onClick(View v) {
+//                                // TODO Auto-generated method stub
+//                                k++;
+//                                Handler handler = new Handler();
+//                                Runnable r = new Runnable() {
+//                                    @Override
+//                                    public void run() {
+//                                        k = 0;
+//                                    }
+//                                };
+//
+//                                if (k == 1) {
+//                                    //Single click
+//                                    handler.postDelayed(r, 250);
+//                                } else if (k == 2) {
+//                                    //Double click
+//                                    k = 0;
+//                                    renderTable( queryBuilder.drillDown(cellData) );
+//                                }
+//                            }
+//                        });
+                        cell.setOnClickListener( v -> renderTable( queryBuilder.drillDown(cellData) ));
+                    }
+                }
                 tblRow.addView(cell);
             }
             table.addView(tblRow);
         }
-
 //        ScrollView sv = new ScrollView(this);
 //        HorizontalScrollView hsv = new HorizontalScrollView(this);
 //        hsv.addView(tableLayout);
@@ -266,13 +305,13 @@ public class TableResultActivity extends AppCompatActivity {
         return table;
     }
 
-    int getDistance(MotionEvent event) {
+    private int getDistance(MotionEvent event) {
         int dx = (int) (event.getX(0) - event.getX(1));
         int dy = (int) (event.getY(0) - event.getY(1));
         return (int) (Math.sqrt(dx * dx + dy * dy));
     }
 
-    public void zoom(Float scaleXY, PointF pivot) {
+    private void zoom(Float scaleXY, PointF pivot) {
         resizeView(scaleXY);
 //        scaleView(scaleXY, pivot);
     }
@@ -289,6 +328,8 @@ public class TableResultActivity extends AppCompatActivity {
     }
 
     private void resizeView(Float scaleXY) {
+//        int baseHeight = (int)getResources().getDimensionPixelSize(R.dimen.itemHeightExtraSmall);
+//        System.out.println("igorOlap:baseHeight:" + baseHeight);
         for (int i = 0, rowsCnt = table.getChildCount(); i < rowsCnt; i++) {
             View rowView = table.getChildAt(i);
             if (rowView instanceof TableRow) {
@@ -298,10 +339,40 @@ public class TableResultActivity extends AppCompatActivity {
                     if (cellView instanceof TextView) {
                         TextView cell = (TextView) cellView;
                         cell.setTextSize(TypedValue.COMPLEX_UNIT_SP, FONT_SIZE + scaleXY);
+//                        ((TextView) cellView).setHeight(baseHeight + scaleXY.intValue());
                     }
                 }
             }
         }
+//        mHandler.sendEmptyMessageDelayed(UPDATE_TABLE, 300);
     }
 
+    public void renderTable(String mdx) {
+        mdxHistory.push(mdx);
+        ThinQuery tq = new ThinQuery(UUID.randomUUID().toString(), cube, mdx);
+        repository.executeThinQuery(tq, queryResultCallback);
+    }
+
+    private final Callback<QueryResult> queryResultCallback = new Callback<QueryResult>() {
+        @Override
+        public void success(QueryResult result) {
+            if (isRunning) {
+                if (result.getCellset() == null) {
+                    Toast.makeText(TableResultActivity.this, "MDX Syntax/Semantic error!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                table = createTableLayout(null, result, result.getHeight(), 0);
+                hScroll.removeAllViews();
+                hScroll.addView(table);
+            }
+        }
+
+        @Override
+        public void failure(Exception e) {
+            if (isRunning) {
+                Toast.makeText(TableResultActivity.this, "Server error!", Toast.LENGTH_SHORT).show();
+                e.printStackTrace();
+            }
+        }
+    };
 }

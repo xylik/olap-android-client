@@ -17,6 +17,8 @@ import java.util.Properties;
 
 import retrofit.RestAdapter;
 import retrofit.client.OkClient;
+import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 /**
  * Created by igor on 04/01/16.
@@ -34,6 +36,11 @@ public class App extends Application {
         super.onCreate();
         ctx = this;
         appProfile = new Profile(ctx);
+
+        CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
+                .setDefaultFontPath("fonts/Roboto-Regular.ttf")
+                .setFontAttrId(R.attr.fontPath)
+                .build());
 
         try {
             InputStream is = getAssets().open(PROJECT_SETTINGS_PATH);

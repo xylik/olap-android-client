@@ -4,13 +4,32 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <TextView
+        android:id="@+id/titleWithImg"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/itemHeightLarge"
+        android:layout_marginLeft="@dimen/marginLarge"
+        android:drawablePadding="12dp"
+        android:drawableLeft="@drawable/cube_gray_xxhdpi"
+        android:gravity="center_vertical"
+        android:ellipsize="end"
+        android:singleLine="true"
+        fontPath="fonts/Roboto-Medium.ttf"
+        android:text="@string/cubes"
+        android:textColor="#727272"
+        android:textSize="@dimen/textMedium"
+        />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp"
+        android:background="@color/divider_color"/>
+
     <ListView
         android:id="@+id/lv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:divider="@drawable/gray_list_divider"
-        android:dividerHeight="@dimen/dp"
-        android:paddingLeft="@dimen/paddingSmall"
-        android:paddingRight="@dimen/paddingExtraSmall" />
+        android:divider="@drawable/gray_divider"
+        android:dividerHeight="@dimen/dp" />
 
 </LinearLayout>

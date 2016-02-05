@@ -1,6 +1,7 @@
 package com.fer.hr.services.repository;
 
 import android.os.AsyncTask;
+import android.text.TextUtils;
 import android.widget.Toast;
 
 import com.annimon.stream.Stream;
@@ -78,7 +79,7 @@ public class SaikuRestRepository implements IRepository {
 
         ArrayList<CubeWithMetaData> cubesMeta = new ArrayList<>();
         for (SaikuCube c : cubesFromAllConnections) {
-            SaikuCubeMetadata meta = App.api.getCubeMetadata(user, c.getConnection(), c.getCatalog(), c.getSchema(), c.getName());
+            SaikuCubeMetadata meta = App.api.getCubeMetadata(user, c.getConnection(), c.getCatalog(), TextUtils.isEmpty(c.getSchema()) ? "null" : c.getSchema(), c.getName());
             cubesMeta.add(new CubeWithMetaData(c, meta));
         }
         return cubesMeta;
@@ -91,9 +92,9 @@ public class SaikuRestRepository implements IRepository {
 
     @Override
     public List<SaikuMeasure> getMeasuresForCube(SaikuCube cube) {
-        for (CubeWithMetaData metaCube : cacheMng.getCubesMeta()) {
-            if (metaCube.getCube() == cube) return metaCube.getSaikuCubeMetadata().getMeasures();
-        }
+        for (CubeWithMetaData metaCube : cacheMng.getCubesMeta())
+            if (metaCube.getCube().equals(cube)) return metaCube.getSaikuCubeMetadata().getMeasures();
+
         return null;
     }
 
@@ -129,7 +130,7 @@ public class SaikuRestRepository implements IRepository {
         String hName = parts[2];
         String lName = parts[3];
         App.api.getLevelMembers(
-                user, c.getConnection(), c.getCatalog(), c.getSchema(), c.getName(), dName, hName, lName,
+                user, c.getConnection(), c.getCatalog(), TextUtils.isEmpty(c.getSchema()) ? "null" : c.getSchema(), c.getName(), dName, hName, lName,
 
                 new retrofit.Callback<List<SimpleCubeElement>>() {
                     @Override
@@ -164,7 +165,7 @@ public class SaikuRestRepository implements IRepository {
         App.api.executeThinQuery(query, new retrofit.Callback<QueryResult>() {
             @Override
             public void success(QueryResult queryResult, Response response) {
-                cacheMng.addQueryResult(query.getMdx(), queryResult);
+                if(queryResult.getCellset() != null) cacheMng.addQueryResult(query.getMdx(), queryResult);
                 if(callback != null) callback.success(queryResult);
             }
 

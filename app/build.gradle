@@ -41,4 +41,5 @@ dependencies {
     compile 'io.reactivex:rxjava:1.1.0'
 
     compile 'com.annimon:stream:1.0.5'
+    compile 'uk.co.chrisjenx:calligraphy:2.1.0'
 }

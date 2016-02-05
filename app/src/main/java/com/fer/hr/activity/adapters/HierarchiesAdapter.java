@@ -5,13 +5,17 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
+import android.widget.AbsoluteLayout;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.fer.hr.R;
 import com.fer.hr.model.Level;
+import com.fer.hr.utils.PixelUtil;
 
 import java.util.List;
 
@@ -55,15 +59,13 @@ public class HierarchiesAdapter extends BaseExpandableListAdapter {
         final Level level = (Level) getChild(groupPosition, childPosition);
 
         holder.levelLbl.setText(level.getData().getName());
-//        holder.hierarchyLbl.setText(level.getData().getHierarchyUniqueName());
-        holder.hierarchyLbl.setVisibility(View.GONE);
 
-        holder.collsImg.setImageResource(R.drawable.column_icon);
-        holder.rowsImg.setImageResource(R.drawable.row_icon);
-        holder.filterImg.setImageResource(R.drawable.filter_icon);
-        if(level.getState() == Level.State.COLLUMNS) holder.collsImg.setImageResource(R.drawable.delete_icon);
-        else if(level.getState() == Level.State.ROWS) holder.rowsImg.setImageResource(R.drawable.delete_icon);
-        else if(level.getState() == Level.State.FILTER) holder.filterImg.setImageResource(R.drawable.delete_icon);
+        holder.collsImg.setImageResource(R.drawable.column_xxhdpi);
+        holder.rowsImg.setImageResource(R.drawable.row_xxhdpi);
+        holder.filterImg.setImageResource(R.drawable.filter_xxhdpi);
+        if(level.getState() == Level.State.COLLUMNS) holder.collsImg.setImageResource(R.drawable.column_active_xxhdpi);
+        else if(level.getState() == Level.State.ROWS) holder.rowsImg.setImageResource(R.drawable.row_active_xxhdpi);
+        else if(level.getState() == Level.State.FILTER) holder.filterImg.setImageResource(R.drawable.filter_active_xxhdpi);
 
 //        Level.State currentState = level.getState();
         holder.collsImg.setOnClickListener( v -> {
@@ -119,12 +121,13 @@ public class HierarchiesAdapter extends BaseExpandableListAdapter {
     public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
         if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) ctx.getSystemService(Service.LAYOUT_INFLATER_SERVICE);
-            convertView = inflater.inflate(R.layout.list_row_header, parent, false);
+            convertView = inflater.inflate(R.layout.list_row_txt_collapse, parent, false);
             convertView.setTag(new GroupViewHolder(convertView));
         }
         GroupViewHolder holder = (GroupViewHolder)convertView.getTag();
         holder.headerLbl.setText(hierarchyName);
-
+        holder.headerLbl.setCompoundDrawables(null, null, null, null);
+        holder.headerLbl.setPadding(PixelUtil.dpToPx(28, ctx), 0, 0, 0);
         return convertView;
     }
 
@@ -152,8 +155,6 @@ public class HierarchiesAdapter extends BaseExpandableListAdapter {
         RelativeLayout rootLyt;
         @Bind(R.id.levelLbl)
         TextView levelLbl;
-        @Bind(R.id.hierarchyLbl)
-        TextView hierarchyLbl;
         @Bind(R.id.collsImg)
         ImageView collsImg;
         @Bind(R.id.rowsImg)

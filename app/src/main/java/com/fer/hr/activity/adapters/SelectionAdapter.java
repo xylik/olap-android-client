@@ -1,6 +1,9 @@
 package com.fer.hr.activity.adapters;
 
 import android.app.Activity;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.ShapeDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,11 +29,13 @@ public class SelectionAdapter extends BaseExpandableListAdapter {
         public void onChildClick(SelectionEntity entity, int groupPosition, int childPosition);
     }
 
+    private Activity parent;
     private HashMap<Integer, SelectionGroup> groups;
     private LayoutInflater inflater;
     private OnChildItemClickListener listener;
 
     public SelectionAdapter(Activity activity, HashMap<Integer, SelectionGroup> groups, OnChildItemClickListener listener) {
+        this.parent = activity;
         this.groups = groups;
         inflater = activity.getLayoutInflater();
         this.listener = listener;
@@ -58,13 +63,28 @@ public class SelectionAdapter extends BaseExpandableListAdapter {
         final ViewHolderChild holder = (ViewHolderChild) convertView.getTag();
 
         holder.entityTitleLbl.setText(entity.getCaption());
-//        holder.hierarchyLbl.setText(level.getData().getHierarchyUniqueName());
         holder.entityDescLbl.setVisibility(View.GONE);
 
         holder.removeItemImg.setOnClickListener(v -> {
-            SelectionEntity e = (SelectionEntity)getChild(groupPosition, childPosition);
+            SelectionEntity e = (SelectionEntity) getChild(groupPosition, childPosition);
             listener.onChildClick(e, groupPosition, childPosition);
         });
+
+        int headerColor;
+        switch(groupPosition) {
+            case 0: headerColor = parent.getResources().getColor(R.color.green_accent); break;
+            case 1: headerColor = parent.getResources().getColor(R.color.brown_accent); break;
+            case 2: headerColor = parent.getResources().getColor(R.color.purple_accent); break;
+            case 3: headerColor = parent.getResources().getColor(R.color.light_gray_accent); break;
+            default: throw new IllegalArgumentException("Unexpected group position!");
+        }
+
+        Drawable background = holder.headerColor.getBackground();
+        if (background instanceof ShapeDrawable) {
+            ((ShapeDrawable)background).getPaint().setColor(headerColor);
+        } else if (background instanceof GradientDrawable) {
+            ((GradientDrawable)background).setColor(headerColor);
+        }
 
         return convertView;
     }
@@ -109,6 +129,23 @@ public class SelectionAdapter extends BaseExpandableListAdapter {
         final ViewHolderGroup holder = (ViewHolderGroup) convertView.getTag();
 
         holder.headerLbl.setText(group.getCaption());
+
+        int headerColor;
+        switch(groupPosition) {
+            case 0: headerColor = parent.getResources().getColor(R.color.green); break;
+            case 1: headerColor = parent.getResources().getColor(R.color.brown); break;
+            case 2: headerColor = parent.getResources().getColor(R.color.purple); break;
+            case 3: headerColor = parent.getResources().getColor(R.color.light_gray); break;
+            default: throw new IllegalArgumentException("Unexpected group position!");
+        }
+
+        Drawable background = holder.headerColor.getBackground();
+        if (background instanceof ShapeDrawable) {
+            ((ShapeDrawable)background).getPaint().setColor(headerColor);
+        } else if (background instanceof GradientDrawable) {
+            ((GradientDrawable)background).setColor(headerColor);
+        }
+
         return convertView;
     }
 
@@ -123,6 +160,8 @@ public class SelectionAdapter extends BaseExpandableListAdapter {
     }
 
     static class ViewHolderGroup {
+        @Bind(R.id.headerColor)
+        View headerColor;
         @Bind(R.id.headerLbl)
         TextView headerLbl;
 
@@ -132,6 +171,8 @@ public class SelectionAdapter extends BaseExpandableListAdapter {
     }
 
     static class ViewHolderChild {
+        @Bind(R.id.headerColor)
+        View headerColor;
         @Bind(R.id.entityTitleLbl)
         TextView entityTitleLbl;
         @Bind(R.id.entityDescLbl)

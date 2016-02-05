@@ -2,27 +2,62 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="16dp">
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/titleWithImg"
+        fontPath="fonts/Roboto-Medium.ttf"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/itemHeightLarge"
+        android:layout_marginLeft="@dimen/marginLarge"
+        android:drawableLeft="@drawable/dimension_gray_xxhdpi"
+        android:drawablePadding="12dp"
+        android:ellipsize="end"
+        android:gravity="center_vertical"
+        android:singleLine="true"
+        android:text="@string/dimensions"
+        android:textColor="#727272"
+        android:textSize="@dimen/textMedium" />
+
+    <View
+        android:id="@+id/titleDivider"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp"
+        android:layout_below="@+id/titleWithImg"
+        android:background="@color/divider_color" />
 
     <ExpandableListView
         android:id="@+id/dimensionsExpLst"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingLeft="@dimen/paddingSmall"
-        android:paddingRight="@dimen/paddingExtraSmall"
-        android:divider="@drawable/gray_list_divider"
-        android:dividerHeight="@dimen/dp"/>
+        android:layout_below="@+id/titleDivider"
+        android:groupIndicator="@null"
+        android:divider="@drawable/gray_divider"
+        android:dividerHeight="@dimen/dp"
+        android:visibility="visible"/>
+
+    <EditText
+        android:id="@+id/searchBar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/itemHeightMedium"
+        android:layout_below="@+id/dimensionsExpLst"
+        android:textSize="@dimen/mediumText"
+        android:lines="1"
+        android:ellipsize="end"
+        android:hint="Enter search keyword"
+        android:visibility="gone"
+        android:paddingLeft="@dimen/paddingLarge"
+        android:paddingRight="@dimen/paddingLarge"
+        android:drawablePadding="@dimen/paddingSmall"
+        android:drawableLeft="@drawable/ic_search_black_24dp"/>
 
     <ListView
         android:id="@+id/filterLst"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/dimensionsExpLst"
-        android:layout_marginTop="@dimen/paddingSmall"
-        android:divider="@drawable/gray_list_divider"
+        android:layout_below="@+id/searchBar"
+        android:divider="@drawable/gray_divider"
         android:dividerHeight="1dp"
-        android:paddingLeft="@dimen/paddingLarge"
         android:visibility="gone"/>
 
     <ProgressBar

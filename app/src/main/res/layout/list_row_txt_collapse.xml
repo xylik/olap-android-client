@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/headerLbl"
+    fontPath="fonts/Roboto-Regular.ttf"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/itemHeightMedium"
+    android:drawableRight="@drawable/expand_more_xxhdpi"
+    android:gravity="center_vertical"
+    android:ellipsize="end"
+    android:paddingLeft="@dimen/paddingMedium"
+    android:paddingRight="@dimen/paddingLarge"
+    android:singleLine="true"
+    android:text="Time dimension"
+    android:textColor="#999999"
+    android:textSize="20sp" />

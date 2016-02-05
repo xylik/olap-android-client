@@ -9,7 +9,7 @@ public class CustExpListview extends ExpandableListView {
 
     public CustExpListview(Context context) {
         super(context);
-        setPadding(20,0,0,0);
+        setPadding(10,0,0,0);
     }
 
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {

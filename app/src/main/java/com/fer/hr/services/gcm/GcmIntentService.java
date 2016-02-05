@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Vibrator;
 import android.support.v4.app.NotificationCompat;
+import android.text.TextUtils;
 
 import com.fer.hr.R;
 import com.fer.hr.activity.LoginActivity;
@@ -33,8 +34,12 @@ public class GcmIntentService extends IntentService {
         appProfile = new Profile(this);
         String msgJson = intent.getExtras().getString(SERVER_MESSAGE_KEY, "");
         Gson gson = new Gson();
-        PushReport report = gson.fromJson(msgJson, PushReport.class);
-        appProfile.addPushReport(report);
+        PushReport report = null;
+        if(!TextUtils.isEmpty(msgJson)) {
+            report = gson.fromJson(msgJson, PushReport.class);
+            appProfile.addPushReport(report);
+        }
+        String reportName = (report==null ? "" : report.getReportName());
 
         Intent resultIntent = new Intent(this, LoginActivity.class);
         resultIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -51,7 +56,7 @@ public class GcmIntentService extends IntentService {
                         .setSmallIcon(R.drawable.icon_salam_notification)
                         .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.salam_icon))
                         .setContentTitle(getString(R.string.pushMsg))
-                        .setContentText(report.getReportName())
+                        .setContentText(reportName)
                         .setAutoCancel(true)
 
                         .setContentIntent(resultPendingIntent);

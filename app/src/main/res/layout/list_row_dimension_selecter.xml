@@ -6,37 +6,20 @@
     android:orientation="vertical"
     android:padding="@dimen/dp">
 
-    <LinearLayout
-        android:id="@+id/txtContainer"
-        android:layout_width="115dp"
+    <TextView
+        android:id="@+id/levelLbl"
+        android:layout_width="130dp"
         android:layout_height="match_parent"
         android:layout_alignParentLeft="true"
         android:layout_marginRight="@dimen/marginExtraSmall"
-        android:paddingLeft="@dimen/paddingMedium"
+        android:layout_marginLeft="@dimen/paddingMedium"
         android:gravity="center_vertical"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/levelLbl"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:maxLines="2"
-            android:text="Department description"
-            android:textColor="@color/black"
-            android:textSize="@dimen/mediumText" />
-
-        <TextView
-            android:id="@+id/hierarchyLbl"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:text="Time hierarchy"
-            android:textColor="@color/black"
-            android:textSize="@dimen/smallText"
-            android:visibility="gone"/>
-    </LinearLayout>
+        android:ellipsize="end"
+        android:maxLines="2"
+        fontPath="fonts/Roboto-Regular.ttf"
+        android:text="Department description"
+        android:textColor="#727272"
+        android:textSize="@dimen/textMedium" />
 
     <ImageView
         android:id="@+id/collsImg"
@@ -45,8 +28,8 @@
         android:padding="@dimen/paddingExtraSmall"
         android:layout_centerVertical="true"
         android:layout_marginRight="@dimen/marginExtraSmall"
-        android:layout_toRightOf="@+id/txtContainer"
-        android:src="@drawable/column_icon"
+        android:layout_toRightOf="@+id/levelLbl"
+        android:src="@drawable/column_xxhdpi"
         android:background="@drawable/btnbgd_none" />
 
     <ImageView
@@ -57,7 +40,7 @@
         android:layout_toRightOf="@+id/collsImg"
         android:layout_marginRight="@dimen/marginExtraSmall"
         android:layout_centerVertical="true"
-        android:src="@drawable/row_icon"
+        android:src="@drawable/row_xxhdpi"
         android:background="@drawable/btnbgd_none" />
 
     <ImageView
@@ -67,7 +50,7 @@
         android:layout_toRightOf="@+id/rowsImg"
         android:padding="@dimen/paddingExtraSmall"
         android:layout_centerVertical="true"
-        android:src="@drawable/filter_icon"
+        android:src="@drawable/filter_xxhdpi"
         android:background="@drawable/btnbgd_none" />
 
 </RelativeLayout>

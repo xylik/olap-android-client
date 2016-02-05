@@ -1,16 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/titleWithImg"
+        fontPath="fonts/Roboto-Medium.ttf"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/itemHeightLarge"
+        android:layout_marginLeft="@dimen/marginLarge"
+        android:drawableLeft="@drawable/measure_gray_xxhdpi"
+        android:drawablePadding="12dp"
+        android:ellipsize="end"
+        android:gravity="center_vertical"
+        android:singleLine="true"
+        android:text="@string/measures"
+        android:textColor="#727272"
+        android:textSize="@dimen/textMedium" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp"
+        android:background="@color/divider_color" />
 
     <ListView
         android:id="@+id/mesuresLst"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingLeft="@dimen/paddingSmall"
-        android:paddingRight="@dimen/paddingExtraSmall"
-        android:divider="@drawable/gray_list_divider"
-        android:dividerHeight="@dimen/dp"/>
+        android:divider="@drawable/gray_divider"
+        android:dividerHeight="@dimen/dp" />
 
 </LinearLayout>

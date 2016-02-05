@@ -45,7 +45,7 @@ public class CubeMetaConverterUtil {
 
     public static HashMap<Integer, SelectionGroup> getEmptySelectionGroup() {
         HashMap<Integer, SelectionGroup> selectionGroups = new HashMap<>();
-        SelectionGroup measureGroup = new SelectionGroup("Measures on Collumns", new ArrayList<>());
+        SelectionGroup measureGroup = new SelectionGroup("Measures", new ArrayList<>());
         SelectionGroup collGroup = new SelectionGroup("Collumns", new ArrayList<>());
         SelectionGroup rowGroup = new SelectionGroup("Rows", new ArrayList<>());
         SelectionGroup filterGroup = new SelectionGroup("Filters", new ArrayList<>());

@@ -101,7 +101,7 @@ public class DimensionsAdapter extends BaseExpandableListAdapter {
     @Override
     public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
         if (convertView == null) {
-            convertView = inflater.inflate(R.layout.list_row_header, parent, false);
+            convertView = inflater.inflate(R.layout.list_row_txt_collapse, parent, false);
             convertView.setTag(new ViewHolderHeader(convertView));
         }
         ViewHolderHeader holder = (ViewHolderHeader)convertView.getTag();

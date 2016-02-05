@@ -221,7 +221,10 @@ public class TableResultActivity extends AppCompatActivity {
 
         TableRow.LayoutParams rowLayout = new TableRow.LayoutParams(TableLayout.LayoutParams.WRAP_CONTENT, TableLayout.LayoutParams.WRAP_CONTENT);
 
-        int cellHeight = (int)getResources().getDimension(R.dimen.itemHeightSmall);
+        int cellHeight;
+        if(screenOrientation == Configuration.ORIENTATION_LANDSCAPE) cellHeight = TableLayout.LayoutParams.WRAP_CONTENT;
+        else cellHeight = (int)getResources().getDimension(R.dimen.itemHeightSmall);
+
         TableRow.LayoutParams cellLayout = new TableRow.LayoutParams(TableLayout.LayoutParams.WRAP_CONTENT, cellHeight);
         cellLayout.setMargins(1, 1, 1, 1);
 //        cellLayout.weight = 1;

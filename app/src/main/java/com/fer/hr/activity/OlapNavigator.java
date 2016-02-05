@@ -1,15 +1,22 @@
 package com.fer.hr.activity;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.Window;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
-import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 
 import com.annimon.stream.Stream;
 import com.fer.hr.R;
@@ -37,22 +44,34 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class OlapNavigator extends AppCompatActivity {
     private static final int DEFAULT_CUBE_INDX = 0;
     private static boolean isRunning;
-    @Bind(R.id.cubeImgBtn)
-    ImageButton cubeImgBtn;
-    @Bind(R.id.measureImgBtn)
-    ImageButton measureImgBtn;
-    @Bind(R.id.dimensionImgBtn)
-    ImageButton dimensionImgBtn;
-    @Bind(R.id.playImgBtn)
-    ImageButton playImgBtn;
+
     @Bind(R.id.selectionLst)
     ExpandableListView selectionLst;
-    @Bind(R.id.mdxImgBtn)
-    ImageButton mdxImgBtn;
+    @Bind(R.id.navBar)
+    Toolbar navBar;
+    @Bind(R.id.cubeBgd)
+    View cubeBgd;
+    @Bind(R.id.cubeBtn)
+    RelativeLayout cubeBtn;
+    @Bind(R.id.measureBgd)
+    View measureBgd;
+    @Bind(R.id.measureBtn)
+    RelativeLayout measureBtn;
+    @Bind(R.id.dimensionBgd)
+    View dimensionBgd;
+    @Bind(R.id.dimensionBtn)
+    RelativeLayout dimensionBtn;
+    @Bind(R.id.mdxBgd)
+    View mdxBgd;
+    @Bind(R.id.mdxBtn)
+    RelativeLayout mdxBtn;
+    @Bind(R.id.fab)
+    FloatingActionButton fab;
 
     private IRepository repository;
     private QueryBuilder queryBuilder;
@@ -78,6 +97,12 @@ public class OlapNavigator extends AppCompatActivity {
         isRunning = true;
         frgMng = getSupportFragmentManager();
 
+        navBar.setNavigationIcon(R.drawable.icon_navbar_back);
+        navBar.setTitle("ADHOC");
+        navBar.setTitleTextColor(getResources().getColor(R.color.white));
+        navBar.setOverflowIcon(getResources().getDrawable(R.drawable.ic_more_vert_white_24dp));
+        setSupportActionBar(navBar);
+
         cubes.addAll(repository.getCubesFromAllConnections());
         if (cubes.size() > 0) {
             SaikuCube defaultCube = cubes.get(DEFAULT_CUBE_INDX);
@@ -97,6 +122,17 @@ public class OlapNavigator extends AppCompatActivity {
     }
 
     @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_material, menu);
+        return true;
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         isRunning = false;
@@ -104,7 +140,7 @@ public class OlapNavigator extends AppCompatActivity {
     }
 
     private void setActions() {
-        cubeImgBtn.setOnClickListener(tv -> {
+        cubeBtn.setOnClickListener(tv -> {
             final int oldSelectedCubeIndx = cubesAdapter.getSelectedItemIndx();
             Dialog d = createDialog(getString(R.string.cubes), R.layout.dialog_cubes);
             d.setOnDismissListener(di -> {
@@ -133,7 +169,7 @@ public class OlapNavigator extends AppCompatActivity {
             d.show();
         });
 
-        measureImgBtn.setOnClickListener(tv -> {
+        measureBtn.setOnClickListener(tv -> {
             Dialog d = createDialog(getString(R.string.measures), R.layout.dialog_measures);
             ListView lv = (ListView) d.findViewById(R.id.mesuresLst);
             lv.setAdapter(measuresAdapter);
@@ -151,12 +187,12 @@ public class OlapNavigator extends AppCompatActivity {
             d.show();
         });
 
-        dimensionImgBtn.setOnClickListener(tv -> {
+        dimensionBtn.setOnClickListener(tv -> {
             DimensionsFragment f = new DimensionsFragment(cubes.get(cubesAdapter.getSelectedItemIndx()), dimensionsAdapter, queryBuilder);
             f.show(frgMng, DimensionsFragment.TAG);
         });
 
-        mdxImgBtn.setOnClickListener(iv -> {
+        mdxBtn.setOnClickListener(iv -> {
             Dialog d = new Dialog(this);
             d.setTitle("MDX");
             d.setContentView(R.layout.dialog_mdx);
@@ -168,7 +204,7 @@ public class OlapNavigator extends AppCompatActivity {
             d.show();
         });
 
-        playImgBtn.setOnClickListener(v -> {
+        fab.setOnClickListener(v -> {
             TableResultActivity.mdxHistory.clear();
             Intent i = new Intent(this, TableResultActivity.class);
             i.putExtra(TableResultActivity.MDX_KEY, queryBuilder.buildMdx());
@@ -179,6 +215,7 @@ public class OlapNavigator extends AppCompatActivity {
 
     private Dialog createDialog(String title, int layoutResourceId) {
         Dialog d = new Dialog(this);
+        d.requestWindowFeature(Window.FEATURE_NO_TITLE);
         d.setTitle(title);
         d.setContentView(layoutResourceId);
         d.setOnDismissListener(dialogInterface -> {
@@ -187,7 +224,8 @@ public class OlapNavigator extends AppCompatActivity {
         return d;
     }
 
-    private enum GroupPosition {Measures, Collumns, Rows, Filters};
+    private enum GroupPosition {Measures, Collumns, Rows, Filters}
+
     private final SelectionAdapter.OnChildItemClickListener selectionListener = new SelectionAdapter.OnChildItemClickListener() {
         @Override
         public void onChildClick(SelectionEntity entity, int groupPosition, int childPosition) {

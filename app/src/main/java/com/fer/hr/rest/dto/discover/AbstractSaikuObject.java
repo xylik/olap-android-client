@@ -34,6 +34,10 @@ public class AbstractSaikuObject implements ISaikuObject, Comparable<ISaikuObjec
     return uniqueName;
   }
 
+  public void setUniqueName(String uniqueName) {
+    this.uniqueName = uniqueName;
+  }
+
   public String getName() {
     return name;
   }

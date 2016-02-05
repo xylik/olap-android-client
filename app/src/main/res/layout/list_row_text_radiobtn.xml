@@ -10,6 +10,7 @@
         android:layout_width="match_parent"
         android:layout_toLeftOf="@+id/radioBtn"
         android:layout_height="match_parent"
+        android:layout_marginLeft="@dimen/marginLarge"
         android:orientation="vertical"
         android:gravity="center_vertical">
 
@@ -19,9 +20,10 @@
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:singleLine="true"
+            fontPath="fonts/Roboto-Regular.ttf"
             android:text="Sales cube"
-            android:textColor="@color/black"
-            android:textSize="@dimen/textMedium" />
+            android:textColor="#727272"
+            android:textSize="16dp" />
 
         <TextView
             android:id="@+id/descriptionLbl"
@@ -29,9 +31,10 @@
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:singleLine="true"
+            fontPath="fonts/Roboto-Regular.ttf"
             android:text="Test connection"
-            android:textColor="@color/gray"
-            android:textSize="@dimen/textSmall" />
+            android:textColor="#727272"
+            android:textSize="@dimen/textExtraSmall" />
     </LinearLayout>
 
     <RadioButton
@@ -39,6 +42,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
+        android:layout_marginRight="@dimen/marginLarge"
         android:layout_centerVertical="true"
         android:clickable="false"
         android:focusable="false"/>

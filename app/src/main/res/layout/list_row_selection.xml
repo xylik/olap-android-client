@@ -3,15 +3,25 @@
     android:id="@+id/rootLyt"
     android:layout_width="match_parent"
     android:layout_height="@dimen/itemHeightMedium"
-    android:orientation="vertical"
-    android:padding="@dimen/dp">
+    android:background="@drawable/rectangular_white_bgd"
+    android:orientation="vertical">
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp"
+        android:background="#D4D4D4"/>
+
+    <View
+        android:id="@+id/headerColor"
+        android:layout_width="15dp"
+        android:layout_height="match_parent"
+        android:background="@drawable/stripe_vertical" />
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="22dp"
         android:layout_marginRight="@dimen/marginExtraSmall"
-        android:paddingLeft="@dimen/paddingMedium"
+        android:layout_toRightOf="@id/headerColor"
         android:layout_toLeftOf="@+id/removeItemImg"
         android:gravity="center_vertical"
         android:orientation="vertical">
@@ -22,9 +32,10 @@
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:maxLines="1"
+            fontPath="fonts/Roboto-Regular.ttf"
             android:text="Year level"
-            android:textColor="@color/black"
-            android:textSize="@dimen/mediumText" />
+            android:textColor="#999999"
+            android:textSize="18sp" />
 
         <TextView
             android:id="@+id/entityDescLbl"
@@ -32,20 +43,21 @@
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:maxLines="1"
+            fontPath="fonts/Roboto-Regular.ttf"
             android:text="Time hierarchy"
-            android:textColor="@color/black"
+            android:textColor="#999999"
             android:textSize="@dimen/smallText"/>
     </LinearLayout>
 
     <ImageView
         android:id="@+id/removeItemImg"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:layout_marginRight="@dimen/marginSmall"
+        android:layout_marginRight="@dimen/marginLarge"
         android:padding="@dimen/paddingExtraSmall"
-        android:src="@drawable/delete_icon"
+        android:src="@drawable/cancel_xxhdpi"
         android:background="@drawable/btnbgd_none" />
 
 </RelativeLayout>

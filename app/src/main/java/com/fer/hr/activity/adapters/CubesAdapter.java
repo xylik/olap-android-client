@@ -38,9 +38,9 @@ public class CubesAdapter extends ArrayAdapter<SaikuCube> {
             convertView.setTag(new ViewHolder(convertView));
         }
         final ViewHolder holder = (ViewHolder) convertView.getTag();
-
-        holder.cubeNameTxt.setText( getItem(position).getName() );
-        holder.cubeCatalogTxt.setVisibility(View.GONE);
+        SaikuCube cube = getItem(position);
+        holder.cubeNameTxt.setText( cube.getName() );
+        holder.cubeCatalogTxt.setText( cube.getConnection() );
         holder.radioBtn.setChecked(selectedItemIndx == position);
         return convertView;
     }

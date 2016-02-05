@@ -16,7 +16,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/navigationBar"
         android:layout_marginTop="@dimen/paddingSmall"
-        android:divider="@drawable/gray_list_divider"
+        android:divider="@drawable/gray_divider"
         android:dividerHeight="1dp"
         android:paddingLeft="@dimen/paddingLarge"/>
 

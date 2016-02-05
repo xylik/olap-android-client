@@ -5,11 +5,14 @@ import android.app.Dialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -30,6 +33,7 @@ import com.fer.hr.services.ServiceProvider;
 import com.fer.hr.services.common.Callback;
 import com.fer.hr.services.repository.IRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
@@ -47,6 +51,8 @@ public class DimensionsFragment extends DialogFragment {
     ListView filterLst;
     @Bind(R.id.progressBar)
     ProgressBar progressBar;
+    @Bind(R.id.searchBar)
+    EditText searchBar;
 
     private OlapNavigator parentActivity;
     private SaikuCube cube;
@@ -58,6 +64,9 @@ public class DimensionsFragment extends DialogFragment {
     private Dialog dialog;
     private Level selectedLevel;
     private ImageView filterImgV;
+
+    private boolean isSearchUsed = false;
+    private List<SimpleCubeElement> membersBySearch;
 
     public DimensionsFragment(SaikuCube cube, DimensionsAdapter dimensionsAdapter, QueryBuilder queryBuilder) {
         this.cube = cube;
@@ -74,12 +83,13 @@ public class DimensionsFragment extends DialogFragment {
             public void onBackPressed() {
                 if (areMembersShowing) {
                     dimensionsExpLst.setVisibility(View.VISIBLE);
+                    searchBar.setVisibility(View.GONE);
                     filterLst.setVisibility(View.GONE);
                     if (filterAdapter.getCheckedItems().size() > 0) {
-                        filterImgV.setImageResource(R.drawable.delete_icon);
+                        filterImgV.setImageResource(R.drawable.filter_active_xxhdpi);
                         selectedLevel.setState(Level.State.FILTER);
                     } else {
-                        filterImgV.setImageResource(R.drawable.filter_icon);
+                        filterImgV.setImageResource(R.drawable.filter_xxhdpi);
                         selectedLevel.setState(Level.State.NEUTRAL);
                     }
                     selectedLevel = null;
@@ -87,13 +97,15 @@ public class DimensionsFragment extends DialogFragment {
                     filterAdapter = null;
                     filterMembers = null;
                     areMembersShowing = false;
-                } else{
+                    isSearchUsed = false;
+                } else {
                     parentActivity.refreshSelectionList();
                     dismiss();
                 }
             }
         };
 
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 //        dialog.requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
 //        dialog.getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.search_bar);
         return dialog;
@@ -102,7 +114,8 @@ public class DimensionsFragment extends DialogFragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        if (!(activity instanceof OlapNavigator)) throw new ClassCastException("Expected activity of OlapNavigator!");
+        if (!(activity instanceof OlapNavigator))
+            throw new ClassCastException("Expected activity of OlapNavigator!");
         parentActivity = (OlapNavigator) activity;
     }
 
@@ -118,10 +131,34 @@ public class DimensionsFragment extends DialogFragment {
         ButterKnife.bind(this, view);
         dimensionsExpLst.setAdapter(dimensionsAdapter);
         dimensionsAdapter.setOnChildClickListener(dimensionClickListener);
+        searchBar.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                isSearchUsed = true;
+            }
 
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                String searchTerm = s.toString();
+                if (searchTerm.isEmpty()) {
+                    filterLst.setAdapter(filterAdapter);
+                    isSearchUsed = false;
+                    return;
+                }
+                membersBySearch = new ArrayList<>();
+                for (SimpleCubeElement e : filterMembers)
+                    if(e.getCaption().toLowerCase().matches("^" + searchTerm + ".+$")) membersBySearch.add(e);
+
+                FilterAdapter adapter = new FilterAdapter(getContext(), membersBySearch);
+                filterLst.setAdapter(adapter);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                //do nothing
+            }
+        });
 //        dialog.setTitle(getString(R.string.dimensions));
-//        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-
         return view;
     }
 
@@ -205,7 +242,10 @@ public class DimensionsFragment extends DialogFragment {
         boolean isSelected = !chkbox.isChecked();
         chkbox.setChecked(isSelected);
 
-        SimpleCubeElement m = filterMembers.get(p);
+        SimpleCubeElement m;
+        if(isSearchUsed) m = membersBySearch.get(p);
+        else m = filterMembers.get(p);
+
         SaikuLevel l = selectedLevel.getData();
         SaikuMember selection = new SaikuMember(
                 l.getDimensionUniqueName(),
@@ -221,19 +261,33 @@ public class DimensionsFragment extends DialogFragment {
     private void updateIcons(ImageView v, ImageView c, ImageView r, ImageView f, Level.State currentState) {
         switch (currentState) {
             case NEUTRAL:
-                v.setImageResource(R.drawable.delete_icon);
+                activateButton(v);
                 break;
             case COLLUMNS:
-                c.setImageResource(R.drawable.column_icon);
-                if (c != v) v.setImageResource(R.drawable.delete_icon);
+                c.setImageResource(R.drawable.column_xxhdpi);
+                if (c != v) activateButton(v);
                 break;
             case ROWS:
-                r.setImageResource(R.drawable.row_icon);
-                if (r != v) v.setImageResource(R.drawable.delete_icon);
+                r.setImageResource(R.drawable.row_xxhdpi);
+                if (r != v) activateButton(v);
                 break;
             case FILTER:
-                f.setImageResource(R.drawable.filter_icon);
-                if (f != v) v.setImageResource(R.drawable.delete_icon);
+                f.setImageResource(R.drawable.filter_xxhdpi);
+                if (f != v) activateButton(f);
+                break;
+        }
+    }
+
+    private void activateButton(ImageView v) {
+        switch (v.getId()) {
+            case R.id.collsImg:
+                v.setImageResource(R.drawable.column_active_xxhdpi);
+                break;
+            case R.id.rowsImg:
+                v.setImageResource(R.drawable.row_active_xxhdpi);
+                break;
+            case R.id.filterImg:
+                v.setImageResource(R.drawable.filter_active_xxhdpi);
                 break;
         }
     }
@@ -244,6 +298,7 @@ public class DimensionsFragment extends DialogFragment {
             if (getActivity() != null && isAdded()) {
                 filterMembers = result;
                 filterAdapter = new FilterAdapter(getContext(), result);
+                searchBar.setVisibility(View.VISIBLE);
                 filterLst.setVisibility(View.VISIBLE);
                 filterLst.setAdapter(filterAdapter);
                 progressBar.setVisibility(View.GONE);
@@ -256,7 +311,6 @@ public class DimensionsFragment extends DialogFragment {
                 areMembersShowing = false;
                 dimensionsExpLst.setVisibility(View.VISIBLE);
                 progressBar.setVisibility(View.GONE);
-                filterLst.setVisibility(View.GONE);
             }
         }
     };

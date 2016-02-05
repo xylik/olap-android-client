@@ -1,38 +1,128 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/paddingMicro"
-    android:paddingTop="@dimen/paddingMicro"
     android:background="@color/root_background">
 
-    <LinearLayout
-        android:id="@+id/selctionListContainer"
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/navBar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:orientation="vertical"
-        android:layout_marginTop="@dimen/marginMedium"
-        android:layout_marginLeft="@dimen/marginMedium"
-        android:layout_marginRight="@dimen/marginMedium"
-        android:background="@drawable/rounded_white_bgd"
-        android:clickable="false">
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/blue"
+        app:popupTheme="@style/AppTheme.PopupOverlay" />
 
-        <ExpandableListView
-            android:id="@+id/selectionLst"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingLeft="@dimen/paddingSmall"
-            android:paddingRight="@dimen/paddingExtraSmall"
-            android:divider="@drawable/gray_list_divider"
-            android:dividerHeight="@dimen/dp"/>
+    <LinearLayout
+        android:id="@+id/actionBar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:orientation="horizontal"
+        android:layout_below="@+id/navBar"
+        android:background="@color/blue"
+        android:weightSum="4">
+
+        <RelativeLayout
+            android:id="@+id/cubeBtn"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:background="@drawable/btnbgd_none">
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_centerInParent="true"
+                android:background="@drawable/cube_white_xhdpi"/>
+            <View
+                android:id="@+id/cubeBgd"
+                android:layout_width="match_parent"
+                android:layout_height="4dp"
+                android:layout_alignParentBottom="true" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/measureBtn"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:background="@drawable/btnbgd_none">
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_centerInParent="true"
+                android:background="@drawable/measure_white_xxhdpi"/>
+            <View
+                android:id="@+id/measureBgd"
+                android:layout_width="match_parent"
+                android:layout_height="4dp"
+                android:layout_alignParentBottom="true" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/dimensionBtn"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:background="@drawable/btnbgd_none">
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_centerInParent="true"
+                android:background="@drawable/dimension_white_xhdpi"/>
+            <View
+                android:id="@+id/dimensionBgd"
+                android:layout_width="match_parent"
+                android:layout_height="4dp"
+                android:layout_alignParentBottom="true" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/mdxBtn"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:background="@drawable/btnbgd_none">
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_centerInParent="true"
+                android:background="@drawable/mdx_icon"/>
+            <View
+                android:id="@+id/mdxBgd"
+                android:layout_width="match_parent"
+                android:layout_height="4dp"
+                android:layout_alignParentBottom="true" />
+        </RelativeLayout>
     </LinearLayout>
 
-    <include
-        android:id="@+id/navigationBar"
-        layout="@layout/bar_olap_navigator"
-        android:layout_alignParentBottom="true"
+    <ExpandableListView
+        android:id="@+id/selectionLst"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/actionBar"
+        android:layout_marginLeft="@dimen/marginMedium"
+        android:layout_marginRight="@dimen/marginMedium"
+        android:groupIndicator="@null"
+        android:divider="@null"
+        android:dividerHeight="0dp"/>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_width="match_parent"/>
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="@dimen/fab_margin"
+        android:src="@drawable/ic_control_point_white_24dp" />
 
 </RelativeLayout>

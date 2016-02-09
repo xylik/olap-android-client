@@ -35,12 +35,7 @@
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:layout_centerInParent="true"
-                android:background="@drawable/cube_white_xhdpi"/>
-            <View
-                android:id="@+id/cubeBgd"
-                android:layout_width="match_parent"
-                android:layout_height="4dp"
-                android:layout_alignParentBottom="true" />
+                android:background="@drawable/cube_white_xxhdpi"/>
         </RelativeLayout>
 
         <RelativeLayout
@@ -56,11 +51,6 @@
                 android:layout_height="30dp"
                 android:layout_centerInParent="true"
                 android:background="@drawable/measure_white_xxhdpi"/>
-            <View
-                android:id="@+id/measureBgd"
-                android:layout_width="match_parent"
-                android:layout_height="4dp"
-                android:layout_alignParentBottom="true" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -75,12 +65,7 @@
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:layout_centerInParent="true"
-                android:background="@drawable/dimension_white_xhdpi"/>
-            <View
-                android:id="@+id/dimensionBgd"
-                android:layout_width="match_parent"
-                android:layout_height="4dp"
-                android:layout_alignParentBottom="true" />
+                android:background="@drawable/dimension_white_xxhdpi"/>
         </RelativeLayout>
 
         <RelativeLayout
@@ -91,16 +76,14 @@
             android:orientation="vertical"
             android:background="@drawable/btnbgd_none">
 
-            <ImageView
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                android:background="@drawable/mdx_icon"/>
-            <View
-                android:id="@+id/mdxBgd"
-                android:layout_width="match_parent"
-                android:layout_height="4dp"
-                android:layout_alignParentBottom="true" />
+                android:text="MDX"
+                android:textStyle="bold"
+                android:textSize="@dimen/textSmall"
+                android:textColor="@color/white"/>
         </RelativeLayout>
     </LinearLayout>
 

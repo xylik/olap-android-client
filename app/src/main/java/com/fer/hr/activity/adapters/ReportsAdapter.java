@@ -9,7 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.fer.hr.R;
-import com.fer.hr.model.PushReport;
+import com.fer.hr.model.Report;
 
 import java.util.List;
 
@@ -19,10 +19,12 @@ import butterknife.ButterKnife;
 /**
  * Created by igor on 24/01/16.
  */
-public class DashboardsAdapter extends ArrayAdapter<PushReport> {
+public class ReportsAdapter extends ArrayAdapter<Report> {
+    private boolean isPersonalAdapter = true;
 
-    public DashboardsAdapter(Context context, List<PushReport> objects) {
+    public ReportsAdapter(Context context, List<Report> objects, boolean isPersonalAdapter) {
         super(context, -1, objects);
+        this.isPersonalAdapter = isPersonalAdapter;
     }
 
     @Override
@@ -34,8 +36,8 @@ public class DashboardsAdapter extends ArrayAdapter<PushReport> {
         }
         ViewHolder holder = (ViewHolder) convertView.getTag();
 
-        int drawableId = R.drawable.report_icon_2;
-        if(position == 0) drawableId = R.drawable.report_icon;
+        int drawableId = R.drawable.tabela_xxhdpi;
+        if(position == 0 && isPersonalAdapter) drawableId = R.drawable.graph_table_xxhdpi;
 
         holder.dashboardImg.setImageDrawable(getContext().getResources().getDrawable(drawableId));
         holder.headerLbl.setText(getItem(position).getReportName());
@@ -45,7 +47,7 @@ public class DashboardsAdapter extends ArrayAdapter<PushReport> {
     }
 
     static class ViewHolder {
-        @Bind(R.id.dashboardImg)
+        @Bind(R.id.reportImg)
         ImageView dashboardImg;
         @Bind(R.id.headerLbl)
         TextView headerLbl;

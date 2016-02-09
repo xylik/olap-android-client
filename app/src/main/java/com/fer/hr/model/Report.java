@@ -5,12 +5,12 @@ import com.fer.hr.rest.dto.discover.SaikuCube;
 /**
  * Created by igor on 24/01/16.
  */
-public class PushReport {
+public class Report {
     private String reportName;
     private String mdx;
     private SaikuCube cube;
 
-    public PushReport(String reportName, String mdx, SaikuCube cube) {
+    public Report(String reportName, String mdx, SaikuCube cube) {
         this.reportName = reportName;
         this.mdx = mdx;
         this.cube = cube;
@@ -45,7 +45,7 @@ public class PushReport {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        PushReport that = (PushReport) o;
+        Report that = (Report) o;
 
         if (!reportName.equals(that.reportName)) return false;
         if (!mdx.equals(that.mdx)) return false;

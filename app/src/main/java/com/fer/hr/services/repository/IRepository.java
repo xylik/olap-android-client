@@ -21,6 +21,8 @@ public interface IRepository extends IService {
 
     void getFreshCubesMeta(final Callback<List<CubeWithMetaData>> callback);
 
+    boolean isEmpty();
+
     List<CubeWithMetaData> getCubesMeta();
 
     List<SaikuCube> getCubesFromAllConnections();

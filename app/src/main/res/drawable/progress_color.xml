@@ -19,7 +19,7 @@
             android:centerColor="@color/white"
             android:centerY="0.50"
             android:endColor="@color/white"
-            android:startColor="@color/black"
+            android:startColor="@color/gray"
             android:type="sweep"
             android:useLevel="false" />
     </shape>

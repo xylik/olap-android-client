@@ -3,16 +3,17 @@ package com.fer.hr.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.fer.hr.R;
@@ -29,12 +30,6 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 
 public class LoginActivity extends AppCompatActivity {
-    @Bind(R.id.btnBack)
-    ImageButton btnBack;
-    @Bind(R.id.title)
-    TextView title;
-    @Bind(R.id.actionBtn)
-    ImageButton actionBtn;
     @Bind(R.id.userEmail)
     EditText userEmail;
     @Bind(R.id.userPassword)
@@ -47,6 +42,8 @@ public class LoginActivity extends AppCompatActivity {
     CheckBox registerChk;
     @Bind(R.id.contentRoot)
     RelativeLayout contentRoot;
+    @Bind(R.id.navBar)
+    Toolbar navBar;
 
     private boolean isLogin = true;
     private Profile appProfile;
@@ -67,15 +64,30 @@ public class LoginActivity extends AppCompatActivity {
         authenticationMng = (IAuthenticate) ServiceProvider.getService(ServiceProvider.AUTHENTICATION);
         repositoryMng = (IRepository) ServiceProvider.getService(ServiceProvider.REPOSITORY);
 
-        if (authenticationMng.isLogedIn()) {
-            contentRoot.setVisibility(View.GONE);
-            progressBar.setVisibility(View.VISIBLE);
-            repositoryMng.getFreshCubesMeta(cubesMetaCallback);
-        } else {
-            initView();
-            setActions();
-        }
+        navBar.setNavigationIcon(R.drawable.icon_navbar_back);
+        navBar.setTitle("Login/Register");
+        navBar.setTitleTextColor(getResources().getColor(R.color.white));
+//        navBar.setOverflowIcon(getResources().getDrawable(R.drawable.ic_more_vert_white_24dp));
+        setSupportActionBar(navBar);
+        initView();
+        setActions();
     }
+
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        getMenuInflater().inflate(R.menu.login_menu, menu);
+//        return true;
+//    }
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        if(item.getItemId() == R.id.logoutMenu){
+//            appProfile.setAuthenticationToken(null);
+//            startActivity(new Intent(LoginActivity.this, LoginActivity.class));
+//            finish();
+//        }
+//
+//        return super.onOptionsItemSelected(item);
+//    }
 
     @Override
     protected void onDestroy() {
@@ -89,14 +101,12 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void initView() {
-        title.setText("Login/Register");
-        actionBtn.setVisibility(View.GONE);
         userEmail.setText(TEST_EMAIL);
         userPassword.setText(TEST_PASSWORD);
     }
 
     private void setActions() {
-        btnBack.setOnClickListener(v -> onBackPressed());
+        navBar.setNavigationOnClickListener(v -> onBackPressed());
 
         registerChk.setOnCheckedChangeListener((buttonView, isChecked) -> isLogin = !isLogin);
 

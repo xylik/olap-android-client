@@ -3,6 +3,7 @@ package com.fer.hr.activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentManager;
@@ -10,7 +11,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.Window;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -25,6 +25,7 @@ import com.fer.hr.activity.adapters.DimensionsAdapter;
 import com.fer.hr.activity.adapters.MeasuresAdapter;
 import com.fer.hr.activity.adapters.SelectionAdapter;
 import com.fer.hr.activity.fragments.DimensionsFragment;
+import com.fer.hr.data.Profile;
 import com.fer.hr.model.Dimension;
 import com.fer.hr.model.Hierarchy;
 import com.fer.hr.model.Level;
@@ -48,31 +49,24 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class OlapNavigator extends AppCompatActivity {
     private static final int DEFAULT_CUBE_INDX = 0;
-    private static boolean isRunning;
+    private boolean isRunning;
 
     @Bind(R.id.selectionLst)
     ExpandableListView selectionLst;
     @Bind(R.id.navBar)
     Toolbar navBar;
-    @Bind(R.id.cubeBgd)
-    View cubeBgd;
     @Bind(R.id.cubeBtn)
     RelativeLayout cubeBtn;
-    @Bind(R.id.measureBgd)
-    View measureBgd;
     @Bind(R.id.measureBtn)
     RelativeLayout measureBtn;
-    @Bind(R.id.dimensionBgd)
-    View dimensionBgd;
     @Bind(R.id.dimensionBtn)
     RelativeLayout dimensionBtn;
-    @Bind(R.id.mdxBgd)
-    View mdxBgd;
     @Bind(R.id.mdxBtn)
     RelativeLayout mdxBtn;
     @Bind(R.id.fab)
     FloatingActionButton fab;
 
+    private Profile appProfile;
     private IRepository repository;
     private QueryBuilder queryBuilder;
 
@@ -94,8 +88,8 @@ public class OlapNavigator extends AppCompatActivity {
         ButterKnife.bind(this);
         repository = (IRepository) ServiceProvider.getService(ServiceProvider.REPOSITORY);
         queryBuilder = QueryBuilder.instance();
-        isRunning = true;
         frgMng = getSupportFragmentManager();
+        appProfile = new Profile(this);
 
         navBar.setNavigationIcon(R.drawable.icon_navbar_back);
         navBar.setTitle("ADHOC");
@@ -122,14 +116,31 @@ public class OlapNavigator extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        isRunning = true;
+    }
+
+    @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_material, menu);
+        getMenuInflater().inflate(R.menu.navigator_menu, menu);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == R.id.logoutMItem) {
+            appProfile.setAuthenticationToken(null);
+            startActivity(new Intent(this, LoginActivity.class));
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -140,6 +151,8 @@ public class OlapNavigator extends AppCompatActivity {
     }
 
     private void setActions() {
+        navBar.setNavigationOnClickListener(v -> onBackPressed());
+
         cubeBtn.setOnClickListener(tv -> {
             final int oldSelectedCubeIndx = cubesAdapter.getSelectedItemIndx();
             Dialog d = createDialog(getString(R.string.cubes), R.layout.dialog_cubes);
@@ -197,6 +210,7 @@ public class OlapNavigator extends AppCompatActivity {
             d.setTitle("MDX");
             d.setContentView(R.layout.dialog_mdx);
             final EditText v = (EditText) d.findViewById(R.id.mdxTxt);
+            v.setTypeface(Typeface.MONOSPACE);
             v.setText(queryBuilder.buildMdx());
             d.setOnDismissListener(di -> {
                 queryBuilder.updateMdx(v.getText().toString().trim());

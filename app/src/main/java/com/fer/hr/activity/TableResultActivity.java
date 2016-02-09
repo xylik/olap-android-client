@@ -1,6 +1,7 @@
 package com.fer.hr.activity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.PointF;
@@ -10,12 +11,14 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.HorizontalScrollView;
-import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TableLayout;
@@ -25,6 +28,7 @@ import android.widget.Toast;
 
 import com.fer.hr.R;
 import com.fer.hr.activity.fragments.DrillFragment;
+import com.fer.hr.data.Profile;
 import com.fer.hr.model.QueryBuilder;
 import com.fer.hr.rest.dto.discover.SaikuCube;
 import com.fer.hr.rest.dto.query2.ThinQuery;
@@ -57,15 +61,12 @@ public class TableResultActivity extends AppCompatActivity {
     ScrollView vScroll;
     @Bind(R.id.resultHorizontalScrol)
     HorizontalScrollView hScroll;
-    @Bind(R.id.btnBack)
-    ImageButton btnBack;
-    @Bind(R.id.actionBtn)
-    ImageButton actionBtn;
-    @Bind(R.id.title)
-    TextView title;
+    @Bind(R.id.navBar)
+    Toolbar navBar;
     private TableLayout table;
 
-    private static boolean isRunning = false;
+    private boolean isRunning = false;
+    private Profile appProfile;
     final static float STEP = 200;
     private static final int FONT_SIZE = 10;
     float mRatio = 1.0f;
@@ -95,9 +96,9 @@ public class TableResultActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_table_result);
         ButterKnife.bind(this);
-        isRunning = true;
         frgMng = getSupportFragmentManager();
         repository = (IRepository) ServiceProvider.getService(ServiceProvider.REPOSITORY);
+        appProfile = new Profile(this);
 
         initView();
         setActions();
@@ -106,11 +107,17 @@ public class TableResultActivity extends AppCompatActivity {
         queryBuilder = QueryBuilder.instance();
         cube = (SaikuCube) getIntent().getSerializableExtra(CUBE_KEY);
         String mdx;
-        if(!mdxHistory.isEmpty()) mdx = mdxHistory.pop();
+        if (!mdxHistory.isEmpty()) mdx = mdxHistory.pop();
         else mdx = getIntent().getStringExtra(MDX_KEY);
         renderTable(mdx);
 
         screenOrientation = getResources().getConfiguration().orientation;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        isRunning = true;
     }
 
     @Override
@@ -127,6 +134,24 @@ public class TableResultActivity extends AppCompatActivity {
             renderTable(previousMdx);
         } else super.onBackPressed();
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.table_result_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == R.id.logoutMItem) {
+            appProfile.setAuthenticationToken(null);
+            startActivity(new Intent(this, LoginActivity.class));
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
@@ -172,17 +197,15 @@ public class TableResultActivity extends AppCompatActivity {
     }
 
     private void initView() {
-        title.setText("Result");
-        actionBtn.setVisibility(View.GONE);
+        navBar.setNavigationIcon(R.drawable.icon_navbar_back);
+        navBar.setTitle("RESULT");
+        navBar.setTitleTextColor(getResources().getColor(R.color.white));
+        navBar.setOverflowIcon(getResources().getDrawable(R.drawable.ic_more_vert_white_24dp));
+        setSupportActionBar(navBar);
     }
 
     private void setActions() {
-        btnBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
+        navBar.setNavigationOnClickListener(v -> onBackPressed());
     }
 
     private SaikuCube loadCubeDefinitionFromAssets(String filePath) {
@@ -222,8 +245,9 @@ public class TableResultActivity extends AppCompatActivity {
         TableRow.LayoutParams rowLayout = new TableRow.LayoutParams(TableLayout.LayoutParams.WRAP_CONTENT, TableLayout.LayoutParams.WRAP_CONTENT);
 
         int cellHeight;
-        if(screenOrientation == Configuration.ORIENTATION_LANDSCAPE) cellHeight = TableLayout.LayoutParams.WRAP_CONTENT;
-        else cellHeight = (int)getResources().getDimension(R.dimen.itemHeightSmall);
+        if (screenOrientation == Configuration.ORIENTATION_LANDSCAPE)
+            cellHeight = TableLayout.LayoutParams.WRAP_CONTENT;
+        else cellHeight = (int) getResources().getDimension(R.dimen.itemHeightSmall);
 
         TableRow.LayoutParams cellLayout = new TableRow.LayoutParams(TableLayout.LayoutParams.WRAP_CONTENT, cellHeight);
         cellLayout.setMargins(1, 1, 1, 1);
@@ -261,14 +285,13 @@ public class TableResultActivity extends AppCompatActivity {
                 else if (cellData.getType().equals(QueryBuilder.COL_H))
                     position = DrillFragment.AxisPosition.COLS;
                 if (position != null) {
-                    if(screenOrientation == Configuration.ORIENTATION_LANDSCAPE) {
+                    if (screenOrientation == Configuration.ORIENTATION_LANDSCAPE) {
                         cell.setOnLongClickListener(c -> {
                             DrillFragment f = new DrillFragment(cellData, queryBuilder);
                             f.show(frgMng, f.TAG);
                             return true;
                         });
-                    }
-                    else {
+                    } else {
 //                        cell.setOnClickListener(new View.OnClickListener() {
 //                            private int k = 0;
 //
@@ -294,7 +317,7 @@ public class TableResultActivity extends AppCompatActivity {
 //                                }
 //                            }
 //                        });
-                        cell.setOnClickListener( v -> renderTable( queryBuilder.drillDown(cellData) ));
+                        cell.setOnClickListener(v -> renderTable(queryBuilder.drillDown(cellData)));
                     }
                 }
                 tblRow.addView(cell);

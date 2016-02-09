@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:layout_height="wrap_content">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/itemHeightExtraLarge"
         android:layout_marginTop="20dp"
@@ -18,19 +17,35 @@
             android:layout_height="match_parent"
             android:background="@drawable/stripe_vertical_tlbl" />
 
+
         <TextView
             android:id="@+id/headerLbl"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="@dimen/paddingSmall"
+            android:layout_marginTop="@dimen/marginSmall"
             android:drawableRight="@drawable/expand_more_xxhdpi"
             android:ellipsize="end"
-            android:paddingLeft="22dp"
+            android:layout_marginLeft="22dp"
             android:paddingRight="@dimen/paddingLarge"
             android:singleLine="true"
             android:text="Time dimension"
             android:textColor="#999999"
             android:textSize="24sp"
             fontPath="fonts/Roboto-Regular.ttf"/>
-    </LinearLayout>
-</LinearLayout>
+
+        <TextView
+            android:id="@+id/selectedItemsLbl"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/headerLbl"
+            android:layout_marginTop="@dimen/marginExtraSmall"
+            android:ellipsize="end"
+            android:layout_marginLeft="22dp"
+            android:singleLine="true"
+            android:text="3 items"
+            android:textColor="#999999"
+            android:textSize="18sp"
+            fontPath="fonts/Roboto-Thin.ttf"/>
+
+    </RelativeLayout>
+</RelativeLayout>

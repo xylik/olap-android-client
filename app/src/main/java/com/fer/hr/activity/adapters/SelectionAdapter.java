@@ -73,9 +73,9 @@ public class SelectionAdapter extends BaseExpandableListAdapter {
         int headerColor;
         switch(groupPosition) {
             case 0: headerColor = parent.getResources().getColor(R.color.green_accent); break;
-            case 1: headerColor = parent.getResources().getColor(R.color.brown_accent); break;
+            case 1: headerColor = parent.getResources().getColor(R.color.orange_accent); break;
             case 2: headerColor = parent.getResources().getColor(R.color.purple_accent); break;
-            case 3: headerColor = parent.getResources().getColor(R.color.light_gray_accent); break;
+            case 3: headerColor = parent.getResources().getColor(R.color.brown_accent); break;
             default: throw new IllegalArgumentException("Unexpected group position!");
         }
 
@@ -129,13 +129,16 @@ public class SelectionAdapter extends BaseExpandableListAdapter {
         final ViewHolderGroup holder = (ViewHolderGroup) convertView.getTag();
 
         holder.headerLbl.setText(group.getCaption());
+        String itemsSelected = "";
+        if(group.getEntities().size() >= 1) itemsSelected = group.getEntities().size() + " selected";
+        holder.selectedItemsLbl.setText(itemsSelected);
 
         int headerColor;
         switch(groupPosition) {
             case 0: headerColor = parent.getResources().getColor(R.color.green); break;
-            case 1: headerColor = parent.getResources().getColor(R.color.brown); break;
+            case 1: headerColor = parent.getResources().getColor(R.color.orange); break;
             case 2: headerColor = parent.getResources().getColor(R.color.purple); break;
-            case 3: headerColor = parent.getResources().getColor(R.color.light_gray); break;
+            case 3: headerColor = parent.getResources().getColor(R.color.brown); break;
             default: throw new IllegalArgumentException("Unexpected group position!");
         }
 
@@ -164,6 +167,8 @@ public class SelectionAdapter extends BaseExpandableListAdapter {
         View headerColor;
         @Bind(R.id.headerLbl)
         TextView headerLbl;
+        @Bind(R.id.selectedItemsLbl)
+        TextView selectedItemsLbl;
 
         ViewHolderGroup(View view) {
             ButterKnife.bind(this, view);

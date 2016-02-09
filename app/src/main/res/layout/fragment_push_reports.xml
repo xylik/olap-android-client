@@ -1,0 +1,15 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F2F2F2"
+    tools:context="com.fer.hr.activity.fragments.PushReportsFragment">
+
+    <ListView
+        android:id="@+id/pushReportLst"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/marginSmall"
+        android:divider="@drawable/gray_divider"
+        android:dividerHeight="1dp" />
+</FrameLayout>

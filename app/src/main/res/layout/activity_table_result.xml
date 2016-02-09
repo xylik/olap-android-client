@@ -1,21 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/rootLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="@dimen/paddingSmall">
+    android:layout_height="match_parent">
 
-    <include
-        android:id="@+id/navigationBar"
-        layout="@layout/bar_navigation"
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/navBar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/blue"
+        app:popupTheme="@style/AppTheme.PopupOverlay" />
 
     <ScrollView
         android:id="@+id/resultVerticalScrol"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/navigationBar"
+        android:layout_below="@+id/navBar"
         android:layout_marginTop="@dimen/marginLarge"
         android:fillViewport="true"
         android:scrollbars="vertical">

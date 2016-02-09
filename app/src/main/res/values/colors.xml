@@ -15,12 +15,12 @@
     <!--SelectionList header colors-->
     <color name="green">#66BC6A</color>
     <color name="green_accent">#4D8D50</color>
-    <color name="brown">#DA614D</color>
-    <color name="brown_accent">#DA614D</color>
+    <color name="orange">#DA614D</color>
+    <color name="orange_accent">#AF4D3C</color>
     <color name="purple">#C632E4</color>
-    <color name="purple_accent">#C632E4</color>
-    <color name="light_gray">#D0D9B6</color>
-    <color name="light_gray_accent">#D0D9B6</color>
+    <color name="purple_accent">#9927B0</color>
+    <color name="brown">#D0D9B6</color>
+    <color name="brown_accent">#ACB494</color>
 
     <color name="gray">#A9A9A9</color>
     <color name="root_background">#E8E8E8</color>

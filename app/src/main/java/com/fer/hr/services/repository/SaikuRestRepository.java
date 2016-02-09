@@ -40,6 +40,7 @@ public class SaikuRestRepository implements IRepository {
     private static SaikuRestRepository instance;
     private SimpleCacheManger cacheMng;
 
+    private boolean isEmpty = true;
     private String user = Constants.DEFAULT_USER;
     private List<CubeWithMetaData> cubesFromAllConnectionsWithMetaData;
     private List<SaikuCube> cubesFromAllConnections = new ArrayList<>();
@@ -54,9 +55,16 @@ public class SaikuRestRepository implements IRepository {
         return instance;
     }
 
+
+
     @Override
     public void getFreshCubesMeta(Callback<List<CubeWithMetaData>> callback) {
         new CubesMetaTask().execute(callback);
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return isEmpty;
     }
 
     @Override
@@ -82,6 +90,7 @@ public class SaikuRestRepository implements IRepository {
             SaikuCubeMetadata meta = App.api.getCubeMetadata(user, c.getConnection(), c.getCatalog(), TextUtils.isEmpty(c.getSchema()) ? "null" : c.getSchema(), c.getName());
             cubesMeta.add(new CubeWithMetaData(c, meta));
         }
+        isEmpty = false;
         return cubesMeta;
     }
 

@@ -14,7 +14,7 @@ import android.text.TextUtils;
 import com.fer.hr.R;
 import com.fer.hr.activity.LoginActivity;
 import com.fer.hr.data.Profile;
-import com.fer.hr.model.PushReport;
+import com.fer.hr.model.Report;
 import com.google.gson.Gson;
 
 /**
@@ -34,9 +34,9 @@ public class GcmIntentService extends IntentService {
         appProfile = new Profile(this);
         String msgJson = intent.getExtras().getString(SERVER_MESSAGE_KEY, "");
         Gson gson = new Gson();
-        PushReport report = null;
+        Report report = null;
         if(!TextUtils.isEmpty(msgJson)) {
-            report = gson.fromJson(msgJson, PushReport.class);
+            report = gson.fromJson(msgJson, Report.class);
             appProfile.addPushReport(report);
         }
         String reportName = (report==null ? "" : report.getReportName());

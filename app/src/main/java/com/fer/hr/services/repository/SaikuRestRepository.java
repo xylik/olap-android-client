@@ -7,6 +7,7 @@ import android.widget.Toast;
 import com.annimon.stream.Stream;
 import com.fer.hr.App;
 import com.fer.hr.model.CubeWithMetaData;
+import com.fer.hr.model.QueryBuilder;
 import com.fer.hr.rest.dto.discover.SaikuCatalog;
 import com.fer.hr.rest.dto.discover.SaikuConnection;
 import com.fer.hr.rest.dto.discover.SaikuCube;
@@ -19,6 +20,7 @@ import com.fer.hr.rest.dto.discover.SaikuMember;
 import com.fer.hr.rest.dto.discover.SaikuSchema;
 import com.fer.hr.rest.dto.discover.SimpleCubeElement;
 import com.fer.hr.rest.dto.query2.ThinQuery;
+import com.fer.hr.rest.dto.queryResult.Cell;
 import com.fer.hr.rest.dto.queryResult.QueryResult;
 import com.fer.hr.services.common.Callback;
 import com.fer.hr.data.Constants;
@@ -29,6 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.UUID;
 
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -54,8 +57,6 @@ public class SaikuRestRepository implements IRepository {
 
         return instance;
     }
-
-
 
     @Override
     public void getFreshCubesMeta(Callback<List<CubeWithMetaData>> callback) {
@@ -144,19 +145,21 @@ public class SaikuRestRepository implements IRepository {
                 new retrofit.Callback<List<SimpleCubeElement>>() {
                     @Override
                     public void success(List<SimpleCubeElement> simpleCubeElements, Response response) {
-                        if(callback != null) callback.success(simpleCubeElements);
+                        if (callback != null) callback.success(simpleCubeElements);
                     }
 
                     @Override
                     public void failure(RetrofitError error) {
-                        if(callback != null) callback.failure(error);
+                        if (callback != null) callback.failure(error);
                     }
                 }
         );
     }
 
     @Override
-    public void executeThinQuery(ThinQuery query, Callback<QueryResult> callback) {
+    public void executeThinQuery(String mdx, SaikuCube cube, Callback<QueryResult> callback) {
+        ThinQuery query = new ThinQuery(UUID.randomUUID().toString(), cube, mdx);
+
         QueryResult cachedResult = cacheMng.getResultForQuery(query.getMdx());
         if(cachedResult != null) {
             callback.success(cachedResult);
@@ -174,15 +177,31 @@ public class SaikuRestRepository implements IRepository {
         App.api.executeThinQuery(query, new retrofit.Callback<QueryResult>() {
             @Override
             public void success(QueryResult queryResult, Response response) {
-                if(queryResult.getCellset() != null) cacheMng.addQueryResult(query.getMdx(), queryResult);
-                if(callback != null) callback.success(queryResult);
+                if (queryResult.getCellset() != null) {
+                    formatTable(queryResult);
+                    cacheMng.addQueryResult(query.getMdx(), queryResult);
+                }
+                if (callback != null) callback.success(queryResult);
             }
 
             @Override
             public void failure(RetrofitError error) {
-                if(callback != null) callback.failure(error);
+                if (callback != null) callback.failure(error);
             }
         });
+    }
+
+    private void formatTable(QueryResult table) {
+        for(Cell[] row: table.getCellset()){
+            for(Cell cell: row){
+                String cellValue = cell.getValue();
+                if(isCellEmpty(cellValue)) cell.setValue("-");
+            }
+        }
+    }
+
+    private boolean isCellEmpty(String cellValue) {
+        return TextUtils.isEmpty(cellValue) || cellValue.equals("null");
     }
 
     private class CubesMetaTask extends AsyncTask<Callback<List<CubeWithMetaData>>, Void, List<CubeWithMetaData>> {

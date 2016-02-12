@@ -25,5 +25,13 @@
     <color name="gray">#A9A9A9</color>
     <color name="root_background">#E8E8E8</color>
 
+    <!--TableResultActivity-->
+    <color name="btnActive">#BCE9F9</color>
+    <color name="tableDivider">#A19D9C</color>
+    <!--#c866bc6a-->
+    <color name="headerHeader">#E5E5E5</color>
+    <color name="header">#F5F5F5</color>
+    <color name="measureName">#BCE9F9</color>
+
     <color name="divider_color">#D4D4D4</color>
 </resources>

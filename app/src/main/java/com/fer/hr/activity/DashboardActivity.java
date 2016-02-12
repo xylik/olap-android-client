@@ -82,7 +82,6 @@ public class DashboardActivity extends AppCompatActivity {
         tabBar.setupWithViewPager(viewPager);
         tabBar.getTabAt(0).setIcon(R.drawable.user_white_xxhdpi);
         tabBar.setTabTextColors(getResources().getColor(R.color.white), getResources().getColor(R.color.white));
-//        tabBar.getTabAt(1).setIcon(R.drawable.www_white_large);
 
         initView();
         setActions();
@@ -133,10 +132,11 @@ public class DashboardActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.logoutMItem) {
-            appProfile.setAuthenticationToken(null);
+            authenticationMng.logout(null);
             startActivity(new Intent(this, LoginActivity.class));
             finish();
             return true;
+
         }
 
         return super.onOptionsItemSelected(item);
@@ -165,6 +165,7 @@ public class DashboardActivity extends AppCompatActivity {
     private void setActions() {
         navBar.setNavigationOnClickListener(v -> onBackPressed());
     }
+
     private final Callback<List<CubeWithMetaData>> cubesMetaCallback = new Callback<List<CubeWithMetaData>>() {
         @Override
         public void success(List<CubeWithMetaData> result) {
@@ -188,6 +189,5 @@ public class DashboardActivity extends AppCompatActivity {
             toast.show();
         }
     }
-
 
 }

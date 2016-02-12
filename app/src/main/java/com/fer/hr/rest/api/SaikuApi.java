@@ -92,6 +92,10 @@ public interface SaikuApi {
     Observable<String> login(@Field("credentials")String credentials);
 
     @FormUrlEncoded
+    @POST("/authentication/login")
+    Observable<String> logout(@Field("credentials")String credentials);
+
+    @FormUrlEncoded
     @POST("/authentication/logout")
     void logout(@Field("authenticationToken")String token, Callback<String> response);
 

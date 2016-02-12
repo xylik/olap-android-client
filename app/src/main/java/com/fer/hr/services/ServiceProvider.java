@@ -19,17 +19,16 @@ public class ServiceProvider {
     public static final int AUTHENTICATION = 2;
     public static final int GCM = 3;
 
-    private static IAuthenticate authenticationService;
-    private static IRepository repositoryService;
-    private static IGCM gcmService;
-
+    private static IService authenticationService;
+    private static IService repositoryService;
+    private static IService gcmService;
 
     private ServiceProvider() {}
 
     public static synchronized  IService getService(int serviceType) {
         switch (serviceType) {
             case AUTHENTICATION: {
-                if(authenticationService == null) authenticationService = new SaikuRestAuthentication();
+                if(authenticationService == null) authenticationService = SaikuRestAuthentication.instance();
                 return authenticationService;
             }
             case REPOSITORY:{
@@ -37,7 +36,7 @@ public class ServiceProvider {
                 return repositoryService;
             }
             case GCM: {
-                if(gcmService==null) gcmService = new GCM(App.getAppContext(), Constants.PROJECT_ID);
+                if(gcmService==null) gcmService = com.fer.hr.services.gcm.GCM.instance();
                 return gcmService;
             }
             default:

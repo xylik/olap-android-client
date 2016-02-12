@@ -98,7 +98,7 @@ public class Profile {
 
     public void removePersonalReport(Report report) {
         if(report == null) throw new ProfileException("invalid input!");
-        List<Report> reports = getAllPushReports();
+        List<Report> reports = getAllPersonalReports();
         reports.remove(report);
 
         Type type = new TypeToken<ArrayList<Report>>() {}.getType();

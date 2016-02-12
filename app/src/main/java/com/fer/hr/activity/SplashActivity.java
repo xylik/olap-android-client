@@ -44,8 +44,6 @@ public class SplashActivity extends AppCompatActivity {
 
         Animation comeFromBot = AnimationUtils.loadAnimation(this, R.anim.slide_out_splash);
         comeFromBot.setDuration(600);
-        final Animation bounce = AnimationUtils.loadAnimation(this, R.anim.bounce);
-//        bounce.setDuration(100);
         reportImg.setAnimation(comeFromBot);
 
         Animation comeFromBot2 = AnimationUtils.loadAnimation(this, R.anim.slide_out_splash);

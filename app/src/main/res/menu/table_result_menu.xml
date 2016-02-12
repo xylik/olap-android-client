@@ -10,7 +10,7 @@
         android:orderInCategory="1"
         android:title="Show MDX"
         android:icon="@drawable/mdx_white_xxhdpi"
-        app:showAsAction="always" />
+        app:showAsAction="never" />
 
     <item
         android:id="@+id/saveMItem"

@@ -25,6 +25,7 @@ public class QueryBuilder {
     public static String ROW_H = "ROW_HEADER";
     public static String COL_H = "COLUMN_HEADER";
     public static String ROW_HH = "ROW_HEADER_HEADER";
+    public static String VALUE = "DATA_CELL";
 
     private static QueryBuilder instance;
 

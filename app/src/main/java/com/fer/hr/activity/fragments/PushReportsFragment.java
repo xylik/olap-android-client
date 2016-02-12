@@ -50,21 +50,23 @@ public class PushReportsFragment extends Fragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        appProfile = new Profile(getContext());
-        reports = appProfile.getAllPushReports();
-        reportsAdapter = new ReportsAdapter(getContext(), reports, false);
-        getContext().registerReceiver(pushReceiver, new IntentFilter(GcmIntentService.PUSH_RECEIVED));
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_push_reports, container, false);
         ButterKnife.bind(this, v);
+        appProfile = new Profile(getContext());
+        reports = appProfile.getAllPushReports();
+        reportsAdapter = new ReportsAdapter(getContext(), reports, false);
         pushReportLst.setAdapter(reportsAdapter);
-
+        getContext().registerReceiver(pushReceiver, new IntentFilter(GcmIntentService.PUSH_RECEIVED));
         return v;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        reports.clear();
+        reports.addAll(appProfile.getAllPushReports());
+        reportsAdapter.notifyDataSetChanged();
     }
 
     @Override

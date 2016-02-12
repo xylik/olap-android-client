@@ -1,8 +1,11 @@
 package com.fer.hr.services.authentication;
 
+import android.content.Context;
 import android.os.AsyncTask;
 
 import com.fer.hr.App;
+import com.fer.hr.data.Profile;
+import com.fer.hr.services.common.ServiceException;
 import com.fer.hr.utils.CryptoUtil;
 import com.fer.hr.services.ServiceProvider;
 import com.fer.hr.services.common.Callback;
@@ -15,28 +18,19 @@ import retrofit.client.Response;
  * Created by igor on 17/01/16.
  */
 public class SaikuRestAuthentication implements IAuthenticate {
+    private static final String NOT_LOGGED_IN = "User is not logged in!";
 
-    @Override
-    public boolean isLogedIn() {
-        return App.getProfile().getAuthenticationToken() == null ? false : true;
+    private static SaikuRestAuthentication instance;
+    private Profile appProfile;
+
+    private SaikuRestAuthentication(){
+        appProfile = App.getProfile();
     }
 
-    @Override
-    public void login(String userName, String password, Callback<String> callback) {
-        String encodedCredentials = getEncodedCredentials(userName, password);
+    public static SaikuRestAuthentication instance() {
+        if(instance == null) instance = new SaikuRestAuthentication();
 
-        App.api.login(encodedCredentials, new retrofit.Callback<String>() {
-            @Override
-            public void success(String saikuToken, Response response) {
-                App.getProfile().setAuthenticationToken(saikuToken);
-                if (callback != null) callback.success(saikuToken);
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-                if (callback != null) callback.failure(error);
-            }
-        });
+        return instance;
     }
 
     @Override
@@ -53,7 +47,7 @@ public class SaikuRestAuthentication implements IAuthenticate {
                 try {
                     String gcmToken = gcmService.registerToGCMServer();
                     saikuToken = App.api.registerAccount(encodedCredentials, gcmToken);
-                    App.getProfile().setAuthenticationToken(saikuToken);
+                    appProfile.setAuthenticationToken(saikuToken);
                 }catch (Exception ex) {
                     this.ex = ex;
                     saikuToken = null;
@@ -71,8 +65,51 @@ public class SaikuRestAuthentication implements IAuthenticate {
         }.execute();
     }
 
+    @Override
+    public void login(String userName, String password, Callback<String> callback) {
+        String encodedCredentials = getEncodedCredentials(userName, password);
+
+        App.api.login(encodedCredentials, new retrofit.Callback<String>() {
+            @Override
+            public void success(String saikuToken, Response response) {
+                appProfile.setAuthenticationToken(saikuToken);
+                if (callback != null) callback.success(saikuToken);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                if (callback != null) callback.failure(error);
+            }
+        });
+    }
+
+    @Override
+    public boolean isLogedIn() {
+        return appProfile.getAuthenticationToken() == null ? false : true;
+    }
+
+    @Override
+    public void logout(Callback<String> callback) {
+        if(!isLogedIn() && callback != null) callback.failure( new ServiceException(NOT_LOGGED_IN));
+
+        App.api.logout(appProfile.getAuthenticationToken(), new retrofit.Callback<String>() {
+            @Override
+            public void success(String successMsg, Response response) {
+                if (callback != null) callback.success(successMsg);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                if (callback != null) callback.failure(error);
+            }
+        });
+
+        appProfile.setAuthenticationToken(null);
+    }
+
     private String getEncodedCredentials(String userName, String password) {
         String credentials = userName + ":" + password;
         return "Basic " + CryptoUtil.encodeBase64(credentials);
     }
+
 }

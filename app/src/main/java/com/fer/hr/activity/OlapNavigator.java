@@ -36,6 +36,7 @@ import com.fer.hr.rest.dto.discover.SaikuCube;
 import com.fer.hr.rest.dto.discover.SaikuDimension;
 import com.fer.hr.rest.dto.discover.SaikuMeasure;
 import com.fer.hr.services.ServiceProvider;
+import com.fer.hr.services.authentication.IAuthenticate;
 import com.fer.hr.services.repository.IRepository;
 import com.fer.hr.utils.CubeMetaConverterUtil;
 
@@ -67,6 +68,7 @@ public class OlapNavigator extends AppCompatActivity {
     FloatingActionButton fab;
 
     private Profile appProfile;
+    private IAuthenticate authenticationMng;
     private IRepository repository;
     private QueryBuilder queryBuilder;
 
@@ -86,6 +88,7 @@ public class OlapNavigator extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_olap_navigator);
         ButterKnife.bind(this);
+        authenticationMng = (IAuthenticate) ServiceProvider.getService(ServiceProvider.AUTHENTICATION);
         repository = (IRepository) ServiceProvider.getService(ServiceProvider.REPOSITORY);
         queryBuilder = QueryBuilder.instance();
         frgMng = getSupportFragmentManager();
@@ -135,8 +138,9 @@ public class OlapNavigator extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId() == R.id.logoutMItem) {
-            appProfile.setAuthenticationToken(null);
+            authenticationMng.logout(null);
             startActivity(new Intent(this, LoginActivity.class));
+            finish();
             return true;
         }
 
@@ -206,9 +210,7 @@ public class OlapNavigator extends AppCompatActivity {
         });
 
         mdxBtn.setOnClickListener(iv -> {
-            Dialog d = new Dialog(this);
-            d.setTitle("MDX");
-            d.setContentView(R.layout.dialog_mdx);
+            Dialog d = createDialog(getString(R.string.mdx), R.layout.dialog_mdx);
             final EditText v = (EditText) d.findViewById(R.id.mdxTxt);
             v.setTypeface(Typeface.MONOSPACE);
             v.setText(queryBuilder.buildMdx());
@@ -219,7 +221,6 @@ public class OlapNavigator extends AppCompatActivity {
         });
 
         fab.setOnClickListener(v -> {
-            TableResultActivity.mdxHistory.clear();
             Intent i = new Intent(this, TableResultActivity.class);
             i.putExtra(TableResultActivity.MDX_KEY, queryBuilder.buildMdx());
             i.putExtra(TableResultActivity.CUBE_KEY, cubes.get(cubesAdapter.getSelectedItemIndx()));
@@ -230,7 +231,6 @@ public class OlapNavigator extends AppCompatActivity {
     private Dialog createDialog(String title, int layoutResourceId) {
         Dialog d = new Dialog(this);
         d.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        d.setTitle(title);
         d.setContentView(layoutResourceId);
         d.setOnDismissListener(dialogInterface -> {
             refreshSelectionList();

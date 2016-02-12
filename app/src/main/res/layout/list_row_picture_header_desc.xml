@@ -6,8 +6,8 @@
 
     <ImageView
         android:id="@+id/reportImg"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:layout_marginLeft="20dp"
         android:layout_centerVertical="true"
         android:src="@drawable/graph_table_xxhdpi" />
@@ -28,10 +28,10 @@
             android:layout_marginTop="@dimen/marginSmall"
             android:text="Header"
             fontPath="fonts/Roboto-Medium.ttf"
-            android:textSize="@dimen/largeText"
+            android:textSize="@dimen/mediumText"
             android:textColor="#8F8F8F"
             android:ellipsize="end"
-            android:singleLine="true"/>
+            android:maxLines="2"/>
 
         <TextView
             android:id="@+id/descriptionLbl"

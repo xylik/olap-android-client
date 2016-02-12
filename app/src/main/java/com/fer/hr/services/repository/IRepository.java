@@ -35,5 +35,5 @@ public interface IRepository extends IService {
 
     void getMembersForLevel(SaikuCube cube, SaikuLevel level, final Callback<List<SimpleCubeElement>> callback);
 
-    void executeThinQuery(ThinQuery query, Callback<QueryResult> callback);
+    void executeThinQuery(String mdx, SaikuCube cube, Callback<QueryResult> callback);
 }

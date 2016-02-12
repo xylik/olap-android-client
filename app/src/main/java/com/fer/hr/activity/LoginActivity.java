@@ -67,27 +67,10 @@ public class LoginActivity extends AppCompatActivity {
         navBar.setNavigationIcon(R.drawable.icon_navbar_back);
         navBar.setTitle("Login/Register");
         navBar.setTitleTextColor(getResources().getColor(R.color.white));
-//        navBar.setOverflowIcon(getResources().getDrawable(R.drawable.ic_more_vert_white_24dp));
         setSupportActionBar(navBar);
         initView();
         setActions();
     }
-
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        getMenuInflater().inflate(R.menu.login_menu, menu);
-//        return true;
-//    }
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        if(item.getItemId() == R.id.logoutMenu){
-//            appProfile.setAuthenticationToken(null);
-//            startActivity(new Intent(LoginActivity.this, LoginActivity.class));
-//            finish();
-//        }
-//
-//        return super.onOptionsItemSelected(item);
-//    }
 
     @Override
     protected void onDestroy() {
@@ -114,6 +97,7 @@ public class LoginActivity extends AppCompatActivity {
             clearFormErrors();
             if (checkFormErrors()) return;
             progressBar.setVisibility(View.VISIBLE);
+            login.setEnabled(false);
 
             String email = userEmail.getText().toString().trim();
             String password = userPassword.getText().toString().trim();
@@ -133,7 +117,10 @@ public class LoginActivity extends AppCompatActivity {
         @Override
         public void failure(Exception e) {
             e.printStackTrace();
-            showErrorMsg(false);
+            if (isRunning) {
+                login.setEnabled(true);
+                showErrorMsg(false);
+            }
         }
     };
 
@@ -148,12 +135,14 @@ public class LoginActivity extends AppCompatActivity {
 
         @Override
         public void failure(Exception e) {
-            showErrorMsg(true);
+            if (isRunning) {
+                login.setEnabled(true);
+                showErrorMsg(true);
+            }
         }
     };
 
     private void showErrorMsg(boolean isMeta) {
-        if (isRunning) {
             String tstMsg;
             if (isLogin) {
                 userPassword.setText("");
@@ -168,7 +157,6 @@ public class LoginActivity extends AppCompatActivity {
             Toast toast = Toast.makeText(LoginActivity.this, tstMsg, Toast.LENGTH_SHORT);
             toast.setGravity(Gravity.CENTER, 0, 0);
             toast.show();
-        }
     }
 
     private boolean checkFormErrors() {

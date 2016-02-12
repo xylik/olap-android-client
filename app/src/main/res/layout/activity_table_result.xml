@@ -17,8 +17,9 @@
         android:id="@+id/resultVerticalScrol"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/marginSmall"
+        android:layout_marginTop="@dimen/marginSmall"
         android:layout_below="@+id/navBar"
-        android:layout_marginTop="@dimen/marginLarge"
         android:fillViewport="true"
         android:scrollbars="vertical">
 

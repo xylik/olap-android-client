@@ -106,8 +106,6 @@ public class DimensionsFragment extends DialogFragment {
         };
 
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-//        dialog.requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
-//        dialog.getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.search_bar);
         return dialog;
     }
 
@@ -158,7 +156,6 @@ public class DimensionsFragment extends DialogFragment {
                 //do nothing
             }
         });
-//        dialog.setTitle(getString(R.string.dimensions));
         return view;
     }
 

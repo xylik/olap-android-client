@@ -42,19 +42,23 @@ public class PersonalReportsFragment extends Fragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        appProfile = new Profile(getContext());
-        reports = appProfile.getAllPersonalReports();
-        reportsAdapter = new ReportsAdapter(getContext(), reports, true);
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_personal_reports, container, false);
         ButterKnife.bind(this, v);
+
+        appProfile = new Profile(getContext());
+        reports = appProfile.getAllPersonalReports();
+        reportsAdapter = new ReportsAdapter(getContext(), reports, true);
         personalReportLst.setAdapter(reportsAdapter);
         return v;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        reports.clear();
+        reports.addAll(appProfile.getAllPersonalReports());
+        reportsAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -103,7 +107,7 @@ public class PersonalReportsFragment extends Fragment {
 
     private void refreshReportsData() {
         reports.clear();
-        reports.addAll(appProfile.getAllPushReports());
+        reports.addAll(appProfile.getAllPersonalReports());
         reportsAdapter.notifyDataSetChanged();
     }
 

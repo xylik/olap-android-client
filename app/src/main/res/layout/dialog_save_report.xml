@@ -13,7 +13,7 @@
         android:ellipsize="end"
         android:gravity="center_vertical"
         android:singleLine="true"
-        android:text="@string/mdx"
+        android:text="@string/saveReport"
         android:textColor="#727272"
         android:textSize="@dimen/textMedium" />
 
@@ -23,13 +23,14 @@
         android:background="@color/divider_color" />
 
     <EditText
-        android:id="@+id/mdxTxt"
+        android:id="@+id/reportNameTxt"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/marginLarge"
         android:padding="@dimen/paddingSmall"
         android:textSize="@dimen/mediumText"
         android:textColor="@color/black"
-        android:text="SELECT Location.something ON ROWS Time.something ON COLLUMNS FROM [Sales cube]"
+        android:hint="Enter report name"
         />
 
 </LinearLayout>

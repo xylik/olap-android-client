@@ -8,6 +8,9 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.fer.hr.App;
+import com.fer.hr.activity.testSheet.Constant;
+import com.fer.hr.data.Constants;
 import com.fer.hr.data.Profile;
 import com.fer.hr.services.common.Callback;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
@@ -20,14 +23,21 @@ import java.io.IOException;
 public class GCM implements IGCM {
     public static String TAG = GCM.class.getSimpleName();
 
+    private static GCM instance;
     private String projectId;
     private Context ctx;
     private Profile appProfile;
 
-    public GCM(Context ctx, String projectId) {
-        this.ctx = ctx;
-        this.projectId = projectId;
+    private GCM() {
+        this.ctx = App.getAppContext();
+        this.projectId = Constants.PROJECT_ID;
         appProfile = new Profile(ctx);
+    }
+
+    public static GCM instance() {
+        if(instance == null) instance = new GCM();
+
+        return instance;
     }
 
     @Override

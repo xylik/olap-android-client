@@ -12,12 +12,13 @@ import com.fer.hr.rest.dto.queryResult.QueryResult;
 import com.fer.hr.services.common.Callback;
 import com.fer.hr.services.common.IService;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by igor on 17/01/16.
  */
-public interface IRepository extends IService {
+public interface IRepository extends IService, Serializable {
 
     void getFreshCubesMeta(final Callback<List<CubeWithMetaData>> callback);
 

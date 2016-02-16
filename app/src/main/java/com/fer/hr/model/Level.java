@@ -2,10 +2,12 @@ package com.fer.hr.model;
 
 import com.fer.hr.rest.dto.discover.SaikuLevel;
 
+import java.io.Serializable;
+
 /**
  * Created by igor on 18/01/16.
  */
-public class Level {
+public class Level implements Serializable {
     public static enum State {NEUTRAL, ROWS, COLLUMNS, FILTER};
     private State state;
     private int hierarchyPosition;

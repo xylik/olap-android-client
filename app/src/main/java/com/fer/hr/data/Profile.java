@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 
+import com.annimon.stream.Stream;
 import com.fer.hr.model.Report;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -109,12 +110,13 @@ public class Profile {
     public List<Report> getAllPersonalReports() {
         String json = prefs.getString(PERSONAL_REPORTS, null);
         List<Report> reports = new ArrayList<>();
-        reports.add(new Report("AD HOC", null, null));
+        reports.add(new Report("AD HOC", null, null, null));
 
         Gson gson = new Gson();
         Type type = new TypeToken<List<Report>>() {}.getType();
         if(json != null) reports = gson.fromJson(json, type);
 
+        Stream.of(reports).filter(r -> r.getQueryBuilder() != null).forEach(r -> r.getQueryBuilder().refreshRepository());
         return reports;
     }
 }

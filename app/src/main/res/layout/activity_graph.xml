@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:ap="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF">
+
+    <!--androidPlot.rangeLabelWidget.text="Range"-->
+    <!--androidPlot.rangeLabelWidget.labelPaint.color="#000000"-->
+    <!--androidPlot.rangeLabelWidget.labelPaint.textSize="13sp"-->
+
+    <!--androidPlot.domainLabelWidget.text="Domain"-->
+    <!--androidPlot.domainLabelWidget.labelPaint.color="#000000"-->
+    <!--androidPlot.domainLabelWidget.labelPaint.textSize="13sp"-->
+
+    <com.androidplot.xy.XYPlot
+        android:id="@+id/plot"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+
+        androidPlot.title="XY Plot"
+        androidPlot.titleWidget.labelPaint.color="#66000000"
+        androidPlot.titleWidget.labelPaint.textSize="16sp"
+
+        androidPlot.backgroundPaint.color="#FAFAFA"
+        androidPlot.graphWidget.backgroundPaint.color="#FAFAFA"
+        androidPlot.graphWidget.gridBackgroundPaint.color="#FAFAFA"
+
+        androidPlot.graphWidget.domainSubGridLinePaint.color="00000000"
+        androidPlot.graphWidget.rangeSubGridLinePaint.color="00000000"
+
+        androidPlot.graphWidget.rangeGridLinePaint.color="#E5E5E5"
+        androidPlot.graphWidget.rangeGridLinePaint.strokeWidth="1dp"
+        androidPlot.graphWidget.rangeTickLabelPaint.color="#000000"
+
+        androidPlot.graphWidget.rangeOriginLinePaint.color="#000000"
+        androidPlot.graphWidget.rangeOriginTickLabelPaint.color="#000000"
+
+        androidPlot.graphWidget.domainGridLinePaint.color="#E5E5E5"
+        androidPlot.graphWidget.domainGridLinePaint.strokeWidth="1dp"
+        androidPlot.graphWidget.domainTickLabelPaint.color="#000000"
+
+        androidPlot.graphWidget.domainOriginLinePaint.color="#000000"
+        androidPlot.graphWidget.domainOriginTickLabelPaint.color="#000000"
+
+        androidPlot.graphWidget.marginLeft="2dp"
+        androidPlot.graphWidget.marginTop="2dp"
+        androidPlot.graphWidget.marginRight="2dp"
+        androidPlot.graphWidget.marginBottom="2dp"
+
+        androidPlot.graphWidget.gridBox.paddingLeft="15dp"
+        androidPlot.graphWidget.gridBox.paddingTop="15dp"
+        androidPlot.graphWidget.gridBox.paddingRight="15dp"
+        androidPlot.graphWidget.gridBox.paddingBottom="70dp"
+        />
+
+    <!--androidPlot.borderColor="#000000"-->
+
+    <!--ap:graphRangeLineThickness="3dp"-->
+    <!--ap:graphDomainLineThickness="3dp"-->
+
+    <!--androidPlot.rangeTickLabelTextSize="15sp"-->
+    <!--androidPlot.rangeOriginTickLabelTextSize="15sp"-->
+    <!--androidPlot.domainTickLabelTextSize="15sp"-->
+    <!--androidPlot.domainOriginTickLabelTextSize="15sp"-->
+    <!--androidPlot.legendTextSize="15sp"-->
+    <!--androidPlot.legendIconHeight="15dp"-->
+    <!--androidPlot.legendIconWidth="15dp"-->
+    <!--androidPlot.legendHeight="25dp"-->
+    <!--androidPlot.legendAnchorPosition="right_bottom"-->
+
+</LinearLayout>

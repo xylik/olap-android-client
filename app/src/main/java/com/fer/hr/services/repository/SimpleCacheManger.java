@@ -4,13 +4,14 @@ import com.fer.hr.model.CubeWithMetaData;
 import com.fer.hr.rest.dto.discover.SaikuCube;
 import com.fer.hr.rest.dto.queryResult.QueryResult;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 
 /**
  * Created by igor on 31/01/16.
  */
-public class SimpleCacheManger {
+public class SimpleCacheManger implements Serializable {
     private static SimpleCacheManger instance;
 
     private List<CubeWithMetaData> cubesFromAllConnectionsWithMetaData;

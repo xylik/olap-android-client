@@ -6,15 +6,23 @@
     tools:context="com.fer.hr.activity.adapters.Material">
 
     <item
-        android:id="@+id/mdxMItem"
+        android:id="@+id/graphMItem"
         android:orderInCategory="1"
-        android:title="Show MDX"
+        android:title="Show graph"
         android:icon="@drawable/mdx_white_xxhdpi"
         app:showAsAction="never" />
 
     <item
-        android:id="@+id/saveMItem"
+        android:id="@+id/mdxMItem"
         android:orderInCategory="2"
+        android:title="Show MDX"
+        android:icon="@drawable/mdx_white_xxhdpi"
+        app:showAsAction="never" />
+
+
+    <item
+        android:id="@+id/saveMItem"
+        android:orderInCategory="3"
         android:title="Save Report"
         android:icon="@drawable/save_white_xxhdpi"
         app:showAsAction="never" />

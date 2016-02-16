@@ -13,6 +13,12 @@ import com.fer.hr.rest.dto.queryResult.Cell;
 import com.fer.hr.services.ServiceProvider;
 import com.fer.hr.services.repository.IRepository;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -21,7 +27,7 @@ import java.util.List;
 /**
  * Created by igor on 19/01/16.
  */
-public class QueryBuilder {
+public class QueryBuilder implements Serializable {
     public static String ROW_H = "ROW_HEADER";
     public static String COL_H = "COLUMN_HEADER";
     public static String ROW_HH = "ROW_HEADER_HEADER";
@@ -38,6 +44,27 @@ public class QueryBuilder {
             repository = (IRepository) ServiceProvider.getService(ServiceProvider.REPOSITORY);
         }
         return instance;
+    }
+
+    public QueryBuilder getCopy() {
+        try {
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(bos);
+            oos.writeObject(instance);
+            oos.flush();
+            oos.close();
+            bos.close();
+            byte[] byteData = bos.toByteArray();
+            ByteArrayInputStream bais = new ByteArrayInputStream(byteData);
+            return (QueryBuilder) new ObjectInputStream(bais).readObject();
+        }catch(IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public void refreshRepository() {
+        repository = (IRepository) ServiceProvider.getService(ServiceProvider.REPOSITORY);
     }
 
     private static enum Axis {COLLUMN, ROW, MEASURE, FILTER}
@@ -336,10 +363,6 @@ public class QueryBuilder {
                     .append(")");
 
         return sb.toString();
-    }
-
-    public String drillUp(Cell c) {
-        return null;
     }
 
     public String buildMdx() {

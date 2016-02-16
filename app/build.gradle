@@ -42,4 +42,5 @@ dependencies {
 
     compile 'com.annimon:stream:1.0.5'
     compile 'uk.co.chrisjenx:calligraphy:2.1.0'
+    compile "com.androidplot:androidplot-core:0.9.6"
 }

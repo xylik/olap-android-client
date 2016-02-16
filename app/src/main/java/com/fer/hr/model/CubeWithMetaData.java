@@ -3,7 +3,9 @@ package com.fer.hr.model;
 import com.fer.hr.rest.dto.discover.SaikuCube;
 import com.fer.hr.rest.dto.discover.SaikuCubeMetadata;
 
-public class CubeWithMetaData {
+import java.io.Serializable;
+
+public class CubeWithMetaData implements Serializable{
     private SaikuCube cube;
     private SaikuCubeMetadata saikuCubeMetadata;
 

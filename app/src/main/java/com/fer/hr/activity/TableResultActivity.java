@@ -2,7 +2,6 @@ package com.fer.hr.activity;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
@@ -22,13 +21,11 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
-import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.view.animation.DecelerateInterpolator;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.HorizontalScrollView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TableLayout;
@@ -37,36 +34,35 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.fer.hr.R;
-import com.fer.hr.activity.fragments.DrillFragment;
 import com.fer.hr.data.Profile;
+import com.fer.hr.model.GraphData;
 import com.fer.hr.model.QueryBuilder;
 import com.fer.hr.model.Report;
 import com.fer.hr.rest.dto.discover.SaikuCube;
-import com.fer.hr.rest.dto.query2.ThinQuery;
 import com.fer.hr.rest.dto.queryResult.Cell;
 import com.fer.hr.rest.dto.queryResult.QueryResult;
 import com.fer.hr.services.ServiceProvider;
 import com.fer.hr.services.authentication.IAuthenticate;
 import com.fer.hr.services.common.Callback;
 import com.fer.hr.services.repository.IRepository;
-import com.fer.hr.utils.PixelUtil;
+import com.fer.hr.utils.QueryResultConverter;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Properties;
 import java.util.Stack;
-import java.util.UUID;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import retrofit.http.Query;
 
 public class TableResultActivity extends AppCompatActivity {
     private static final String CUBE_METADATA_PATH = "queries/testCube.properties";
     public static final String CUBE_KEY = "CUBE_KEY";
     public static final String MDX_KEY = "MDX_KEY";
     public static final String TITLE_KEY = "TITLE_KEY";
-    private Stack<String> mdxHistory = new Stack<>();
+    public static final String QUERY_BUILDER_KEY = "QUERY_BUILDER_KEY";
 
     @Bind(R.id.rootLayout)
     RelativeLayout rootLayout;
@@ -76,8 +72,11 @@ public class TableResultActivity extends AppCompatActivity {
     HorizontalScrollView hScroll;
     @Bind(R.id.navBar)
     Toolbar navBar;
+    @Bind(R.id.progressBar)
+    ProgressBar progressBar;
     private TableLayout table;
 
+    private Stack<String> mdxHistory = new Stack<>();
     private boolean isRunning = false;
     private Profile appProfile;
     final static float STEP = 200;
@@ -122,12 +121,13 @@ public class TableResultActivity extends AppCompatActivity {
 
 //        SaikuCube cube = loadCubeDefinitionFromAssets(CUBE_METADATA_PATH);
         Intent i = getIntent();
-        queryBuilder = QueryBuilder.instance();
+        if(i.getSerializableExtra(QUERY_BUILDER_KEY) != null) queryBuilder = (QueryBuilder)i.getSerializableExtra(QUERY_BUILDER_KEY);
+        else queryBuilder = QueryBuilder.instance();
         cube = (SaikuCube) i.getSerializableExtra(CUBE_KEY);
         String mdx;
         if (!mdxHistory.isEmpty()) mdx = mdxHistory.pop();
         else mdx = i.getStringExtra(MDX_KEY);
-        if(i.getStringExtra(TITLE_KEY) != null) title = i.getStringExtra(TITLE_KEY);
+        if (i.getStringExtra(TITLE_KEY) != null) title = i.getStringExtra(TITLE_KEY);
         screenOrientation = getResources().getConfiguration().orientation;
 
         initView();
@@ -156,7 +156,7 @@ public class TableResultActivity extends AppCompatActivity {
         super.onConfigurationChanged(newConfig);
 
 
-        if(newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
             Animation slideIn = AnimationUtils.loadAnimation(this, R.anim.move_in);
 //            slideIn.setDuration(600);
             slideIn.setAnimationListener(new Animation.AnimationListener() {
@@ -164,18 +164,19 @@ public class TableResultActivity extends AppCompatActivity {
                 public void onAnimationStart(Animation animation) {
                     //do nothing
                 }
+
                 @Override
                 public void onAnimationEnd(Animation animation) {
                     navBar.setVisibility(View.GONE);
                 }
+
                 @Override
                 public void onAnimationRepeat(Animation animation) {
                     //do nothing
                 }
             });
             navBar.setAnimation(slideIn);
-        }
-        else if(newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
             Animation slideOut = AnimationUtils.loadAnimation(this, R.anim.move_out);
 //            slideOut.setDuration(600);
             slideOut.setAnimationListener(new Animation.AnimationListener() {
@@ -183,10 +184,12 @@ public class TableResultActivity extends AppCompatActivity {
                 public void onAnimationStart(Animation animation) {
                     navBar.setVisibility(View.VISIBLE);
                 }
+
                 @Override
                 public void onAnimationEnd(Animation animation) {
                     // do nothing
                 }
+
                 @Override
                 public void onAnimationRepeat(Animation animation) {
                     //do nothing
@@ -212,7 +215,13 @@ public class TableResultActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        if(item.getItemId() == R.id.mdxMItem) {
+        if(item.getItemId() == R.id.graphMItem){
+            Intent i = new Intent(this, GraphActivity.class);
+            GraphData gd = QueryResultConverter.convertToGraphData(lastResult);
+            i.putExtra(GraphActivity.GRAPH_DATA_KEY, gd);
+            i.putExtra(GraphActivity.GRAPH_TITLE_KEY, title);
+            startActivity(i);
+        }else if (item.getItemId() == R.id.mdxMItem) {
             Dialog d = new Dialog(this);
             d.requestWindowFeature(Window.FEATURE_NO_TITLE);
             d.setContentView(R.layout.dialog_mdx);
@@ -220,8 +229,7 @@ public class TableResultActivity extends AppCompatActivity {
             v.setTypeface(Typeface.MONOSPACE);
             v.setText(lastExecutedMdx);
             d.show();
-        }
-        else if(item.getItemId() == R.id.saveMItem) {
+        } else if (item.getItemId() == R.id.saveMItem) {
             final AlertDialog d = new AlertDialog.Builder(this)
                     .setView(R.layout.dialog_save_report)
                     .setPositiveButton(getString(R.string.save), null)
@@ -234,7 +242,7 @@ public class TableResultActivity extends AppCompatActivity {
                             EditText reportTxt = (EditText) d.findViewById(R.id.reportNameTxt);
                             String reportName = reportTxt.getText().toString().trim();
                             if (!reportName.isEmpty()) {
-                                appProfile.addPersonalReport(new Report(reportName, mdxHistory.peek(), cube));
+                                appProfile.addPersonalReport(new Report(reportName, mdxHistory.peek(), cube, queryBuilder.getCopy()));
                                 Toast.makeText(this, "Report saved!", Toast.LENGTH_SHORT).show();
                                 d.dismiss();
                             } else reportTxt.setError("Report name can't be empty!");
@@ -245,8 +253,7 @@ public class TableResultActivity extends AppCompatActivity {
                         });
             });
             d.show();
-        }
-        else if(item.getItemId() == R.id.logoutMItem) {
+        } else if (item.getItemId() == R.id.logoutMItem) {
             authenticationMng.logout(null);
             startActivity(new Intent(this, LoginActivity.class));
             finish();
@@ -374,19 +381,19 @@ public class TableResultActivity extends AppCompatActivity {
                 int minPadding = getResources().getDimensionPixelSize(R.dimen.paddingExtraSmall);
                 int dpPadding = getResources().getDimensionPixelSize(R.dimen.dp);
                 String cellType = cellData.getType();
+                String cellValue = cellData.getValue();
 
-                if(cellData.getType().endsWith("_HEADER_HEADER")) {
+                if (cellData.getType().endsWith("_HEADER_HEADER")) {
                     cell.setBackgroundColor(getResources().getColor(R.color.headerHeader));
                     cell.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
                     cell.setPadding(dpPadding, 0, minPadding, 0);
-                }
-                else if(cellData.getType().endsWith("_HEADER")) {
+                } else if (cellData.getType().endsWith("_HEADER")) {
                     cell.setBackgroundColor(getResources().getColor(R.color.header));
                     cell.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
-                    if(cellType.equals("COLUMN_HEADER"))cell.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL);
+                    if (cellType.equals("COLUMN_HEADER"))
+                        cell.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL);
                     cell.setPadding(dpPadding, 0, minPadding, 0);
-                }
-                else {
+                } else {
                     cell.setBackgroundColor(Color.WHITE);
                     cell.setGravity(Gravity.RIGHT | Gravity.CENTER_VERTICAL);
                     int p = getResources().getDimensionPixelSize(R.dimen.paddingMedium);
@@ -394,20 +401,29 @@ public class TableResultActivity extends AppCompatActivity {
                 }
 
 
-                if( i==0 && cellPosition >= 1 && cellPosition < rowData.length-1) cellLayout.setMargins(0, 2, 2, 1);
-                else if( i==0 && cellPosition == 0 )cellLayout.setMargins(2, 2, 2, 1);
-                else if( i==0 && cellPosition == rowData.length-1)cellLayout.setMargins(0, 2, 0, 1);
-                else if(cellPosition == 0 && i >= 1 && i < rowCnt-1)cellLayout.setMargins(2, 0, 2, 1);
-                else if(cellPosition == 0 && i == rowCnt-1)cellLayout.setMargins(2, 0, 2, 0);
-                else if(i == rowCnt-1 && cellType.endsWith("_HEADER"))cellLayout.setMargins(0, 0, 2, 0);
-                else if(cellType.endsWith("_HEADER") && cellPosition != rowData.length-1) cellLayout.setMargins(0, 0, 2, 1);
-                else if(i == rowCnt-1) cellLayout.setMargins(0, 0, 0, 0);
+                if (i == 0 && cellPosition >= 1 && cellPosition < rowData.length - 1)
+                    cellLayout.setMargins(0, 2, 2, 1);
+                else if (i == 0 && cellPosition == 0) cellLayout.setMargins(2, 2, 2, 1);
+                else if (i == 0 && cellPosition == rowData.length - 1)
+                    cellLayout.setMargins(0, 2, 0, 1);
+                else if (cellPosition == 0 && i >= 1 && i < rowCnt - 1)
+                    cellLayout.setMargins(2, 0, 2, 1);
+                else if (cellPosition == 0 && i == rowCnt - 1) cellLayout.setMargins(2, 0, 2, 0);
+                else if (i == rowCnt - 1 && cellType.endsWith("_HEADER"))
+                    cellLayout.setMargins(0, 0, 2, 0);
+                else if (cellType.endsWith("_HEADER") && cellPosition != rowData.length - 1)
+                    cellLayout.setMargins(0, 0, 2, 1);
+                else if (i == rowCnt - 1) cellLayout.setMargins(0, 0, 0, 0);
                 else cellLayout.setMargins(0, 0, 0, 1);
                 cell.setLayoutParams(cellLayout);
 
                 if (cellData.getType().equals(QueryBuilder.ROW_H) || cellData.getType().equals(QueryBuilder.COL_H)) {
                     cell.setBackgroundResource(R.drawable.btnbgd_none_gray);
-                    cell.setOnClickListener(v -> renderTable(queryBuilder.drillDown(cellData)));
+                    cell.setOnClickListener(v -> {
+                        if (cellValue.equals("-"))
+                            Toast.makeText(this, "Drill not allowed!", Toast.LENGTH_SHORT).show();
+                        else renderTable(queryBuilder.drillDown(cellData));
+                    });
                 }
 
                 tblRow.addView(cell);
@@ -460,6 +476,8 @@ public class TableResultActivity extends AppCompatActivity {
     }
 
     public void renderTable(String mdx) {
+        progressBar.setVisibility(View.VISIBLE);
+        if(table != null) table.setClickable(false);
         lastExecutedMdx = mdx;
         repository.executeThinQuery(mdx, cube, queryResultCallback);
     }
@@ -477,12 +495,16 @@ public class TableResultActivity extends AppCompatActivity {
                 table = createTableLayout(null, result, result.getHeight(), 0);
                 hScroll.removeAllViews();
                 hScroll.addView(table);
+                progressBar.setVisibility(View.GONE);
+                table.setClickable(true);
             }
         }
 
         @Override
         public void failure(Exception e) {
             if (isRunning) {
+                progressBar.setVisibility(View.GONE);
+                if(table != null)table.setClickable(true);
                 lastExecutedMdx = mdxHistory.peek();
                 Toast.makeText(TableResultActivity.this, "Server error!", Toast.LENGTH_SHORT).show();
                 e.printStackTrace();

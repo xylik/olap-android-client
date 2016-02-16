@@ -1,10 +1,11 @@
 package com.fer.hr.rest.dto.discover;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
 
-public class SaikuCubeMetadata {
+public class SaikuCubeMetadata implements Serializable {
 
     private final List<SaikuDimension> dimensions;
     private final List<SaikuMeasure> measures;
@@ -16,7 +17,6 @@ public class SaikuCubeMetadata {
         this.measures = measures;
         this.properties = properties;
     }
-
 
     /**
      * @return the dimensions

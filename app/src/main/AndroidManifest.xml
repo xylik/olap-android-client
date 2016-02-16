@@ -51,33 +51,31 @@
 
         <service android:name=".services.gcm.GcmIntentService" />
 
-         <activity
-         android:name=".activity.LoginActivity"
-         android:label="@string/title_activity_login"
-         android:screenOrientation="portrait"
-         android:theme="@style/AppTheme.NoActionBar" />
-
+        <activity
+            android:name=".activity.LoginActivity"
+            android:label="@string/title_activity_login"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activity.MdxActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
-
         <activity
             android:name=".activity.OlapNavigator"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"/>
-
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activity.ResultActivity"
             android:label="@string/title_activity_result"
             android:theme="@style/AppTheme.NoActionBar" />
-
-        <activity android:name=".activity.TableResultActivity"
-            android:configChanges="orientation|screenSize"/>
-
+        <activity
+            android:name=".activity.TableResultActivity"
+            android:configChanges="orientation|screenSize" />
         <activity
             android:name=".activity.DashboardActivity"
             android:screenOrientation="portrait" />
+        <activity android:name=".activity.GraphActivity" >
+        </activity>
     </application>
 
 </manifest>

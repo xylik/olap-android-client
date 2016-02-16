@@ -9,11 +9,13 @@ public class Report {
     private String reportName;
     private String mdx;
     private SaikuCube cube;
+    private QueryBuilder queryBuilder;
 
-    public Report(String reportName, String mdx, SaikuCube cube) {
+    public Report(String reportName, String mdx, SaikuCube cube, QueryBuilder builder) {
         this.reportName = reportName;
         this.mdx = mdx;
         this.cube = cube;
+        this.queryBuilder = builder;
     }
 
     public String getMdx() {
@@ -38,6 +40,10 @@ public class Report {
 
     public void setCube(SaikuCube cube) {
         this.cube = cube;
+    }
+
+    public QueryBuilder getQueryBuilder() {
+        return queryBuilder;
     }
 
     @Override

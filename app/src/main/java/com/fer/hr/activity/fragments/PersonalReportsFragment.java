@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.annimon.stream.Stream;
 import com.fer.hr.R;
 import com.fer.hr.activity.OlapNavigator;
 import com.fer.hr.activity.TableResultActivity;
@@ -22,6 +23,7 @@ import com.fer.hr.model.Report;
 import com.fer.hr.services.gcm.GcmIntentService;
 
 import java.util.List;
+import java.util.logging.StreamHandler;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -76,6 +78,7 @@ public class PersonalReportsFragment extends Fragment {
             i.putExtra(TableResultActivity.TITLE_KEY, r.getReportName());
             i.putExtra(TableResultActivity.MDX_KEY, r.getMdx());
             i.putExtra(TableResultActivity.CUBE_KEY, r.getCube());
+            i.putExtra(TableResultActivity.QUERY_BUILDER_KEY, r.getQueryBuilder());
             startActivity(i);
         }
     }
